@@ -1610,7 +1610,8 @@ Sub Shkura()
 			Regim_Set.cols("it_max").Z(0) = 100
 
 			If file_save then
-				dir_1 = Rastr.SEndCommandMain(13,"Укажите каталог для сохранения файлов:","",0)  'директория, куда сохранять режимы
+				dir_1 = Rastr.SEndCommandMain(13,"Укажите каталог для сохранения файлов:","",0)
+				'директория, куда сохранять режимы
 				prdir = Rastr.SEndCommandMain(3,"","",0) ' директория с Rastr
 				shabl_rg2 = prdir & "SHABLON\" & sha_rg2
 				shabl_ut2 = prdir & "SHABLON\" & sha_ut2
@@ -1808,7 +1809,8 @@ Sub Shkura()
 		End If
 
 		'///// НАЖАТА КНОПКА СОХРАНИТЬ //////////////////////////
-		If(obj_IE.document.MyForm.ButtonPressed.Value  = "4") THEN  'Если нажата кнопка Сохранить, то считываем переменные из окон и записываем в файл
+		If(obj_IE.document.MyForm.ButtonPressed.Value  = "4") THEN
+		'Если нажата кнопка Сохранить, то считываем переменные из окон и записываем в файл
 			ip = obj_IE.document.MyForm.IP.value
 			iq = obj_IE.document.MyForm.IQ.value
 			np = obj_IE.document.MyForm.NP.value
@@ -1886,8 +1888,9 @@ Sub Shkura()
 	Set obj_IE = NOTHING
 End Sub
 
-'////////////////////////////////////РЕЖИМ С МИНИМАЛЬНЫМ ПЕРЕТОКОМ/////////////////////////////////////////////////
-Sub MinRegim(branch, kPut0, kQut, znch, option1,option2,option3,obj_IE) 'option1-утяжеление по Q,option2-расчет весовых коэффициентов по P,option3- утяжеление по P
+'//////////////////////////////////// РЕЖИМ С МИНИМАЛЬНЫМ ПЕРЕТОКОМ  /////////////////////////////////////////////////
+Sub MinRegim(branch, kPut0, kQut, znch, option1,option2,option3,obj_IE)
+    'option1-утяжеление по Q,option2-расчет весовых коэффициентов по P,option3- утяжеление по P
 	Pzad = 1 * kPut0 'требуемый переток P по ветви в минимальном режиме
 	If option1 then
 		'сначала производим утяжеление по Q путем изменения анцапф на автотрансформаторах
@@ -1992,6 +1995,7 @@ Sub MinRegim(branch, kPut0, kQut, znch, option1,option2,option3,obj_IE) 'option1
 					shag = shag + 1
 
 			End Select
+
 			P_ip = Flow_Pip(vetv_pos)
 			P_iq = Flow_Piq(vetv_pos)
 			If (kPut0 = (-1) and kPut = 1 and P_ip > Pzad) then FLAG_ut = false
