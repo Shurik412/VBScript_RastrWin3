@@ -1,0 +1,77 @@
+
+r=setlocale("en-us")
+rrr=1
+
+
+set t=RASTR
+set vet=t.tables("vetv")
+set uzl=t.tables("node")
+set gen=t.Tables("Generator")
+set vozb=t.Tables("Exciter")
+set arv=t.Tables("ExcControl")
+set vieee=t.Tables("DFWIEEE421")
+set stieee=t.Tables("DFWIEEE421PSS13")
+set pss4	=t.Tables("DFWIEEE421PSS4B")
+set ars=Rastr.Tables("ARS")
+set forc=Rastr.Tables("Forcer")
+set omv=t.Tables("DFW421UEL")
+set bor=t.Tables("DFWOELUNITROL")
+set FuncPQ=t.Tables("FuncPQ")
+set Governor=t.Tables("Governor")
+set shn=t.Tables("polin")
+set PQdiag=t.Tables("graphik2")
+
+t.tables("node").Cols.Add "vras_new", PR_REAL
+uzl.cols("vras_new").calc("vras")
+
+gen.setsel("")
+gen.cols("Qmax").calc("Node.qmax")
+gen.cols("Qmin").calc("Node.qmin")
+
+
+'uzl.setsel("qmax=0 & qg>0")
+'uzl.cols("vzd").calc("vras_new")
+'uzl.cols("qmax").calc("qg")
+
+'uzl.setsel("qmin=0 & qg<0")
+'uzl.cols("vzd").calc("vras_new")
+'uzl.cols("qmin").calc("qg")
+
+
+t.tables("polin").Cols.Add "select_1", PR_BOOL
+
+
+shn.SetSel("select_1=0")
+k=shn.findnextsel(-1)
+while k<>(-1)
+shn.cols("select_1").z(k)=1
+select_Id=shn.cols("nsx").z(k)
+
+shn.SetSel("select_1=0 & nsx="&select_Id)
+shn.delrows
+
+'PQdiag.cols("deltest_1").calc("1")
+
+shn.SetSel("select_1=0")
+k=shn.findnextsel(k)
+wend
+
+
+t.tables("graphik2").Cols.Add "select_1", PR_BOOL
+t.tables("graphik2").Cols.Add "deltest_1", PR_BOOL
+
+PQdiag.SetSel("select_1=0")
+k=PQdiag.findnextsel(-1)
+while k<>(-1)
+PQdiag.cols("select_1").z(k)=1
+select_Id=PQdiag.cols("Num").z(k)
+select_P=PQdiag.cols("P").z(k)
+'t.printp select_P
+PQdiag.SetSel("select_1=0 & P="&select_P & "&Num="&select_Id)
+PQdiag.delrows
+
+'PQdiag.cols("deltest_1").calc("1")
+
+PQdiag.SetSel("select_1=0")
+k=PQdiag.findnextsel(k)
+wend

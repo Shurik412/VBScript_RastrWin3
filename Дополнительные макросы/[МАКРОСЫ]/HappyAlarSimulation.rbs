@@ -1,0 +1,36 @@
+set spShell = CreateObject("WScript.Shell")
+DocPath = spShell.SpecialFolders("MyDocuments")
+FilePath  = DocPath & "\RastrWin3\test-rastr\Rustab\"
+TemplPath = DocPath & "\RastrWin3\shablon\"
+Rastr.Load RG_REPL, FilePath & "test9.rst", TemplPath & "динамика.rst"
+Rastr.Load RG_REPL, FilePath & "КЗ-откл-нагрузка.scn", TemplPath & "сценарий.scn"
+Rastr.NewFile TemplPath & "автоматика.dfw"
+Set spFWDynamic = Rastr.FWDynamic
+spFWDynamic.Run
+
+Set spXL = CreateObject("Excel.Application")
+spXL.SheetsInNewWorkbook = 1
+spXL.Workbooks.Add
+spXL.Visible = 1
+
+Set spBranches = Rastr.Tables("vetv")
+
+zs = Array("zrb","zxb","zre", "zxe")
+' начало zrb + j*zxb
+' конец  zre + j*zxe
+
+for nx = 0 to spBranches.Size - 1
+
+    for z = 0 to 3
+        column = nx * 4 + 2 + z 
+        spXL.Worksheets(1).Cells(1,column) = spBranches.Cols("name").ZS(nx) + " " + zs(z)
+        Plot = Rastr.GetChainedGraphSnapshot("vetv", zs(z) ,nx,0)
+        PlotLength = UBound(Plot) - LBound(Plot)
+        spXL.Worksheets(1).Range(spXL.Worksheets(1).Cells(2,column),spXL.Worksheets(1).Cells(PlotLength + 1,column)) = Plot
+    next
+    
+    if nx = 0 then
+        spXL.Worksheets(1).Range(spXL.Worksheets(1).Cells(2,1),spXL.Worksheets(1).Cells(PlotLength + 1,1)) = spXL.WorksheetFunction.Index(Plot,0,2)
+        spXL.Worksheets(1).Cells(1,1) = "t"
+    end if
+next

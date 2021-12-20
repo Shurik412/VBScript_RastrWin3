@@ -1,0 +1,16 @@
+Set t=Rastr
+Set gen = t.Tables("Generator")
+Set node = t.Tables("node")
+
+Set node_gen = gen.Cols("Node")
+Set sel_gen = gen.Cols("sel")
+
+MaxRowGen = gen.Count
+
+for i=0 to MaxRowGen-1
+    node.SetSel("ny=" & node_gen.Z(i))
+    j=node.FindNextSel(-1)
+    if j<>-1 Then
+        sel_gen.Z(i) = 1
+    End if
+next

@@ -1,0 +1,113 @@
+Set t =Rastr
+Set gen = t.Tables("Generator")
+Set Turbine = t.Tables("ARS") 
+Set ARS = t.Tables("Governor")
+
+MaxGenRow=gen.Size-1
+MaxARSrow = ARS.Size-1
+ii = 0
+for i = 0 to MaxGenRow
+    NumGen = gen.Cols("Num").Z(i)
+    NameGen = gen.Cols("Name").Z(i)
+    ARSIdGen = gen.Cols("ARSId").Z(i)
+    PnomGen = gen.Cols("Pnom").Z(i)
+    Pgen = gen.Cols("P").Z(i)
+    StaGen = gen.Cols("sta").Z(i)
+    if StaGen = 1 and Pgen = 0 Then 
+        t.Printp("Отключенный Генертор 'ДО': Pgen = " & Pgen & ", " & "PnomGen = " & PnomGen)
+        gen.Cols("P").Z(i) = PnomGen - 1
+        t.Printp("Отключенный Генертор 'ПОСЛЕ': Pgen = " & gen.Cols("P").Z(i) & ", " & "PnomGen = " & PnomGen - 1)
+    End if 
+    if Pgen > PnomGen and PnomGen <> 10 Then 
+        t.Printp("Включенный генератор 'ДО': Pgen = " & Pgen  & ", " & "PnomGen = " & PnomGen)
+        gen.Cols("P").Z(i) = PnomGen
+        t.Printp("Включенный генератор 'ПОСЛЕ': Pgen = " & gen.Cols("P").Z(i)  & ", " & "PnomGen = " & PnomGen)
+    End if 
+    Turbine.SetSel("Id =" & ARSIdGen)
+    j = Turbine.FindNextSel(-1)
+    if j<>-1 Then
+        IdTurbine = Turbine.Cols("Id").Z(j)
+        NameTurbine = Turbine.Cols("Name").Z(j)
+        ArsIdTurbine = Turbine.Cols("GovernorId").Z(j)
+        PtMaxTurbine = Turbine.Cols("otmax").Z(j)
+        PtMinTurbine = Turbine.Cols("otmin").Z(j)
+        ARS.SetSel("Id =" & ArsIdTurbine)
+        jj = ARS.FindNextSel(-1)
+        if jj<>-1 Then
+           IdARS = ARS.Cols("Id").Z(jj)
+           NameARS = ARS.Cols("Name").Z(jj)
+           PtMaxARS = ARS.Cols("otmax").Z(jj)
+           PtMinARS = ARS.Cols("otmin").Z(jj)
+           
+           if Pgen > 0 and Pnom > 0 Then
+              Pgen_proc = Pgen/Pnom
+            Elseif Pgen < 0 and Pnom > 0 Then
+               Pgen_proc = ABS(Pgen)/ABS(Pnom)
+            ElseIf Pgen < 0 and Pnom < 0 Then
+                Pgen_proc = ABS(Pgen)/ABS(Pnom)
+            ElseIf Pgen = 0 and Pnom <> 0 Then
+                Pgen_proc = ABS(Pnom)/ABS(Pnom)
+            ElseIf Pgen = 0 and Pnom = 0 Then
+                Pgen_proc = 1
+            Else
+                t.Printp("Проверь Pgen: " & NumGen & " - " & NameGen)
+                Pgen_proc = 1
+            End If
+           
+           If PtMaxTurbine > 0 Then
+                PtMaxTurbine_proc = PtMaxTurbine / 100
+           ElseIf PtMaxTurbine = 0 Then 
+                PtMaxTurbine_proc = 1
+           Else 
+                t.Printp("Проверь PtMaxTurbine: " & IdTurbine  & " - " & NameTurbine)
+                PtMaxTurbine_proc = 1
+           End if
+          
+          If PtMinTurbine > 0 Then
+            PtMinTurbine_proc = PtMinTurbine / 100
+          ElseIf PtMinTurbine = 0 Then 
+            PtMinTurbine_proc = 1
+          Else 
+            t.Printp("Проверь PtMinTurbine: " & IdTurbine  & " - " & NameTurbine)
+            PtMinTurbine_proc = 1
+          End if
+          
+          If PtMaxARS > 0 Then 
+            PtMaxARS_proc = PtMaxARS / 100
+          ElseIf PtMaxARS = 0 Then 
+            PtMaxARS_proc = 1
+          Else 
+            t.Printp("Проверь PtMaxARS: " & IdARS  & " - " & NameARS)
+            PtMaxARS_proc = 1
+          End if
+          
+          If PtMinARS >0 Then
+            PtMinARS_proc = PtMinARS / 100
+          ElseIf PtMinARS = 0 Then
+            PtMinARS_proc = 1
+          Else 
+            t.Printp("Проверь PtMinARS: " & IdARS  & " - " & NameARS)
+            PtMinARS_proc = 1
+          end if
+           
+           'Generator:
+               'Pgen_proc
+           'Turbine:
+               'PtMaxTurbine_proc
+               'PtMinTurbine_proc
+           'ARS:
+               'PtMaxARS_proc
+               'PtMinARS_proc
+            t.Printp("Pgen_proc = " & Pgen_proc * 100 & ", " & "PtMaxARS_proc = " & PtMaxARS_proc * 100)
+            if Pgen_proc > PtMaxARS_proc Then 
+                ARS.Cols("otmax").Z(jj) = (Pgen_proc + 0.05) * 100
+                t.Printp("Pgen_proc = " & ((Pgen_proc + 0.05)*100) & ", " & "PtMaxARS_proc = " & ARS.Cols("otmax").Z(jj))
+            End if 
+        
+            ii = ii + 1
+        
+        End if
+ End if
+ 
+    
+next

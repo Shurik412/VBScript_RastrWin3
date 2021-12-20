@@ -1,0 +1,108 @@
+Set t = Rastr
+
+Function CorrNA()
+    Set t = Rastr
+	Set vet=t.tables("vetv")
+	Set uzl=t.tables("node")
+	Set ray=t.tables("area")
+	Set gen=t.tables("Generator")
+	Set pqd=t.Tables("graphik2")
+	Set graphikIT=t.Tables("graphikIT")
+	Set area=t.Tables("area")
+	Set area2=t.Tables("area2")
+	Set darea=t.Tables("darea")
+	Set polin=t.Tables("polin")
+
+	uzl.SetSel ("na=8040")
+	uzl.cols("na").calc("510")
+
+	uzl.SetSel ("na=834")
+	uzl.cols("na").calc("803")
+
+	uzl.SetSel ("na=833")
+	uzl.cols("na").calc("106")
+
+	uzl.SetSel ("na=831")
+	uzl.cols("na").calc("110")
+
+	uzl.SetSel ("na=829")
+	uzl.cols("na").calc("803")
+
+	uzl.SetSel ("na=826")
+	uzl.cols("na").calc("803")
+
+	uzl.SetSel ("na=825")
+	uzl.cols("na").calc("803")
+
+	uzl.SetSel ("na=827")
+	uzl.cols("na").calc("803")
+
+	uzl.SetSel ("na=828")
+	uzl.cols("na").calc("803")
+
+	uzl.SetSel ("na=824")
+	uzl.cols("na").calc("805")
+
+	uzl.SetSel ("na=823")
+	uzl.cols("na").calc("403")
+
+
+	uzl.SetSel ("na=821")
+	uzl.cols("na").calc("403")
+
+	uzl.SetSel ("na=820")
+	uzl.cols("na").calc("403")
+
+	uzl.SetSel ("na=819")
+	uzl.cols("na").calc("807")
+
+	uzl.SetSel ("na=813")
+	uzl.cols("na").calc("201")
+
+	uzl.SetSel ("na=822")
+	uzl.cols("na").calc("813")
+
+	uzl.SetSel ("na=0")
+	uzl.cols("na").calc("ny*0.00001")
+
+	gen.SetSel ("Node.sta=1")
+	gen.cols("sta").calc(1)
+
+	uzl.SetSel ("vzd=0 & qmax>0")
+	uzl.cols("vzd").calc("uhom")
+End Function
+
+
+Function add_summ_node_area()
+    Set area = t.Tables("area")
+    Set node = t.Tables("node")
+     
+    ' area.Cols.Add "Sum_Node", PR_REAL
+    
+    ' Set SumNode = area.Cols("Sum_Node")
+    
+    max_count = area.Count
+    maxNode_Count = node.Count
+    Sum = 0
+    
+    for i=0 to max_count-1
+        na_area = area.Cols("na").Z(i) 
+        node.SetSel("na=" & na_area)
+        j=node.FindNextSel (-1)
+        i2 = 0
+        while j<>-1
+            i2 = i2 + 1
+            j = node.FindNextSel (j)
+        wend
+        max_row = i2
+        SumNode.Z(i) = max_row  
+        t.Printp("na = " & na_area & "; max_row_node = " & max_row)
+        if i<>0 then
+            Sum = Sum + SumNode.Z(i-1)
+        end if 
+    next
+        t.Printp("Сумма узлов по Районам: " & Sum & "; Сумма по УЗЛАМ: " & maxNode_Count ) 
+End Function
+
+Call CorrNA()
+' Call add_summ_node_area()

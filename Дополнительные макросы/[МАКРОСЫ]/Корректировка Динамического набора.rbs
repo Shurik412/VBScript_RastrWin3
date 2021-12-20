@@ -1,0 +1,99 @@
+Set t=Rastr
+Set gen = t.Tables("Generator")
+Set node = t.Tables("node")
+Set react = t.Tables("Reactors")
+Set Excel = CreateObject("Excel.Application")
+
+dir_excel = "C:\Users\Ohrimenko_AG\Desktop\Excel_Rastr.xlsx"
+
+MaxCountNode = node.Count
+MaxCountGen = gen.Count
+
+flag = 1
+if flag = 1 then
+    i=1
+    for g=0 to MaxCountGen-1
+        generator_num = gen.Cols("Num").Z(g)
+        generator_Name = gen.Cols("Name").Z(g)
+        generator_Node = gen.Cols("Node").Z(g)
+        generator_P = gen.Cols("P").Z(g)
+        generator_Q = gen.Cols("Q").Z(g)
+        generator_Type = gen.Cols("ModelType").Z(g)
+        generator_Pnom = gen.Cols("Pnom").Z(g)
+        generator_Mj = gen.Cols("Mj").Z(g)
+        generator_Unom = gen.Cols("Ugnom").Z(g)
+        generator_cosfi = gen.Cols("cosFi").Z(g)
+        
+        gen_p_bool = abs(generator_P) =< generator_Pnom
+        gen_q_bool = abs(generator_Q) =< generator_Pnom
+
+        if gen_p_bool=False or gen_q_bool=False Then
+            t.printp(" -------------------------------------- ")
+            t.printp(i & ".Название: " & generator_Name & vbCrLf  & "- Порядковый индекс: " & g+1 & vbCrLf & "- Модель генератора="& generator_Type & vbCrLf  & "- Mj="& generator_Mj & vbCrLf  & "- Pgen="& generator_P & vbCrLf & "- Qgen="& generator_Q & vbCrLf & "- Pnom=" & generator_Pnom & vbCrLf   &"- Bool по модулю |Pgen| и |Qgen|=" & gen_p_bool & vbCrLf)
+            i = i + 1 
+        End if 
+        
+        if (abs(generator_P) > generator_Pnom) or (abs(generator_Q) > generator_Pnom) then
+            if (abs(generator_P) > abs(generator_Q)) then
+                gen.Cols("Pnom").Z(g) = abs(generator_P)
+                generator_Mj = 5*generator_Pnom/generator_cosfi
+            end if
+            if (abs(generator_P) < abs(generator_Q)) then
+                gen.Cols("Pnom").Z(g) = abs(generator_Q)
+                generator_Mj = 5 * generator_Pnom/generator_cosfi
+            end if
+        end if
+        if generator_P < 0 and generator_Type = 3 then
+            gen.Cols("P").Z(g) = generator_Pnom/100
+            generator_Pkorr = gen.Cols("P").Z(g)
+            t.printp(vbTab & "Pgen_korr="& generator_Pkorr)
+        end if 
+    Next
+End if
+
+
+Function DelGen(dir_excel, max_row_excel)
+    for ii=0 to max_row_excel
+        Excel_Gen_num = Excel.Worksheets("Rustab").Cells(ii+2,1).Value
+        Excel_Gen_name = Excel.Worksheets("Rustab").Cells(ii+2,2).Value
+        Excel_Gen_node = Excel.Worksheets("Rustab").Cells(ii+2,3).Value
+        Excel_Gen_P = Excel.Worksheets("Rustab").Cells(ii+2,10).Value
+        Excel_Gen_Q = Excel.Worksheets("Rustab").Cells(ii+2,11).Value
+        Excel_Gen_Pnom = Excel.Worksheets("Rustab").Cells(ii+2,12).Value
+        
+        gen.SetSel("Num=" & Excel_Gen_num)
+        j_gen = gen.FindNextSel(-1)
+        if j_gen <> -1 then 
+            gen.DelRow(j_gen)
+        end if
+        node.SetSel("ny=" & Excel_Gen_node)
+        j_node = node.FindNextSel(-1)
+        if j_node <> -1 Then
+            node.Cols("pg").Z(j_node) = Excel_Gen_P
+            node.Cols("qg").Z(j_node) = Excel_Gen_Q
+            node.Cols("vzd").Z(j_node) = ""
+            node.Cols("qmin").Z(j_node) = ""
+            node.Cols("qmax").Z(j_node) = ""
+        End if       
+    next
+End Function
+
+Function max_row_excel()
+    i=2
+    while Excel.Worksheets("Rustab").Cells(i,1).Value<>0
+        i = i + 1
+    wend
+    max_row_excel=i-1
+End Function
+
+flag2 = 0
+if flag2 = 1 Then
+    Excel.Workbooks.open dir_excel
+    Excel.Visible = False
+    
+    t.printp(max_row_excel)
+    Call DelGen(dir_excel, max_row_excel)
+    
+    Excel.Application.Quit
+End if
+

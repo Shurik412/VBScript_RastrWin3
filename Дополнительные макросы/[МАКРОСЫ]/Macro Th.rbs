@@ -1,0 +1,35 @@
+r=setlocale("en-us")
+rrr=1
+
+set t=RASTR
+
+set uzl=t.tables("ExcControl")
+
+t.tables("ExcControl").Cols.Add "Th", PR_REAL
+t.tables("ExcControl").Cols.Add "Tj", PR_REAL
+t.tables("ExcControl").Cols.Add "Kh", PR_REAL
+
+t.tables("ExcControl").Cols.Add "Tb", PR_REAL
+t.tables("ExcControl").Cols.Add "Kpr", PR_REAL
+t.tables("ExcControl").Cols.Add "Ka", PR_REAL
+t.tables("ExcControl").Cols.Add "Kof", PR_REAL
+t.tables("ExcControl").Cols.Add "Kc", PR_REAL
+t.tables("ExcControl").Cols.Add "Tc", PR_REAL
+t.tables("ExcControl").Cols.Add "Klv", PR_REAL
+t.tables("ExcControl").Cols.Add "Vlv", PR_REAL
+t.tables("ExcControl").Cols.Add "Tf3", PR_REAL
+t.tables("ExcControl").Cols.Add "Theta", PR_REAL
+t.tables("ExcControl").Cols.Add "Tf2", PR_REAL
+t.tables("ExcControl").Cols.Add "Ta", PR_REAL
+t.tables("ExcControl").Cols.Add "Kv", PR_REAL
+t.tables("ExcControl").Cols.Add "Kdr", PR_REAL
+t.tables("ExcControl").Cols.Add "Kp", PR_REAL
+t.tables("ExcControl").Cols.Add "Kd", PR_REAL
+t.tables("ExcControl").Cols.Add "Kb", PR_REAL
+t.tables("ExcControl").Cols.Add "Vrmin", PR_REAL
+t.tables("ExcControl").Cols.Add "Vrmax", PR_REAL
+t.tables("ExcControl").Cols.Add "Kir", PR_REAL
+t.tables("ExcControl").Cols.Add "Tk", PR_REAL
+t.tables("ExcControl").Cols.Add "Vemin", PR_REAL
+
+

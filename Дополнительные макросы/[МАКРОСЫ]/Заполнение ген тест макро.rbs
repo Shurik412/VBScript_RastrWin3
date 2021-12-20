@@ -1,0 +1,54 @@
+Set t=Rastr
+Set gen=t.Tables("Generator")
+set uzl=t.tables("node")
+set nsta	=gen.Cols("sta")
+set numg	=gen.Cols("Num")
+set nameg	=gen.Cols("Name")
+set gNumBrand = gen.Cols("NumBrand")
+set nodeg	=gen.Cols("Node")
+set ExciterId=gen.Cols("ExciterId")
+set ARSId=gen.Cols("ARSId")
+set pgen	=gen.Cols("P")
+set ModelType	=gen.Cols("ModelType")
+set pnom	=gen.Cols("Pnom")
+set unom	=gen.Cols("Ugnom")
+set cosfi	=gen.Cols("cosFi")
+set Demp	=gen.Cols("Demp")
+set mj		=gen.Cols("Mj")
+set Pmax	=gen.Cols("Pmax")
+set xd1	=gen.Cols("xd1")
+
+Call FillingUnspecifiedGenerators()
+
+
+
+
+Function FillingUnspecifiedGenerators()' Заполнение незадпнных генераторов 
+	ii = 0
+	t.Printp("Запуск функции - заполнение незаданных генераторов'! ( FillingUnspecifiedGenerators() )")
+	gen.SetSel "ModelType=0"
+	jj=gen.findnextsel(-1)
+	while jj<>-1
+		uzl.SetSel "ny=" & nodeg.Z(jj)
+		j1=uzl.FindNextSel (-1)
+		if j1<>-1 then
+			ModelType.Z(jj)=3
+			If ABS(Pmax.Z(jj))>0 then
+				pnom.Z(jj) = ABS(Pmax.Z(jj))
+			else
+				pnom.Z(jj) = ABS(Qmax.Z(jj))
+			end if
+			unom.Z(jj)=uzl.Cols("uhom").z(j1)
+			cosfi.Z(jj)=0.85
+			Demp.Z(jj)=5
+			mj.Z(j2)=5*pnom.Z(jj)/cosfi.Z(jj)
+			t.printp pnom.Z(jj)
+			xd1.Z(jj)=0.3*unom.Z(jj)*unom.Z(jj)*cosfi.Z(jj)/pnom.Z(jj)
+			ii = ii + 1
+		end if
+		gen.SetSel "ModelType=0"
+		jj=gen.FindNextSel (jj)
+		
+	wend
+	t.Printp("Завершение работы функции - заполнение незаданных генераторов'! ( FillingUnspecifiedGenerators() )")
+End Function

@@ -1,0 +1,23 @@
+Set t = Rastr
+r=setlocale("en-us")
+Set spGen = t.Tables("Generator")
+Set spNode = t.Tables("node")
+Set spReact = t.Tables("Reactors")
+Set spUSHR = t.Tables("USHR")
+
+'spGenMax = spGen.Count-1
+'t.printp(spGenMax)
+
+CountUSHR = spUSHR.Count-1
+ii = 0
+for i = 0 to CountUSHR
+    USHRNode = spUSHR.Cols("NodeId").Z(i)
+    spNode.SetSel("ny=" & USHRNode)
+    j = spNode.FindNextSel(-1)
+    if j = -1 Then
+       spUSHR.DelRows 
+       ii=ii+1
+       t.Printp("Количество УШР без узлов: " & ii)
+    end if
+next
+t.Printp("Исследование завершено")

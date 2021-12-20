@@ -16,6 +16,7 @@ Set Generator = t.Tables("Generator")
 Set ti = t.Tables("ti")
 Set Reactors = t.Tables("Reactors")
 Set area = t.tables("area")
+Dim area_array
 
 print("Запуск макроса " & "дата: " & date() & " | время: " & Hour(Now()) & " hour " & Minute(Now()) & " minut")
 Time_1 = Timer()
@@ -31,349 +32,58 @@ Sub main()
 	' Входные параметры:  Nothing
 	' Возврат:    Nothing
 	'************************************************************
-	
-	'###########################################
-	' Урал 
-	viborka_ot_100_do_200_full = "(na>100 & na<200)" ' для выключателей без учета ограничений по напряжению
-	viborka_ot_100_do_200 = "(na>100 & na<200) & (uhom<230)"  ' для эквивалентирования с учетом огран. по напряжению
-	
-	'###########################################
-	' 201 => Самарская область (АИП => 813)
-	na_Samarskay_obl = na_of_the_area_by_name("Самарская область")
-	viborka_201_Samarskay_obl_full = "na=" & na_Samarskay_obl
-	viborka_201_Samarskay_obl = "(na="& na_Samarskay_obl &") & (uhom < 160)"
-	
-	'###########################################
-	' 205 => Республика Татарстан (Татарстан) (АИП => 205)
-	na_Tatrskay = na_of_the_area_by_name("Республика Татарстан (Татарстан)")
-	viborka_205_Tatrskay_full = "na=" & na_Tatrskay
-	viborka_205_Tatrskay = "(na="& na_Tatrskay &") & (uhom < 160)"
-	
-	'###########################################
-	' 206 => Чувашская Республика - Чувашия (АИП => 206)
-	na_Chuvashy = na_of_the_area_by_name("Чувашская Республика - Чувашия")
-	viborka_206_Chuvashy_full = "na=" & na_Chuvashy
-	viborka_206_Chuvashy = "(na="& na_Chuvashy &") & (uhom < 160)"
-	
-	'###########################################
-	' 208 => Республика Марий Эл (АИП => 208)
-	na_MariEl = na_of_the_area_by_name("Республика Марий Эл")
-	viborka_208_MariEl_full = "na=" & na_MariEl
-	viborka_208_MariEl = "(na="& na_MariEl &") & (uhom < 160)"
-	
-	'###########################################
-	' 202 => Саратовская область (АИП => 202)
-	na_Saratov_obl = na_of_the_area_by_name("Саратовская область")
-	viborka_202_Saratov_obl_full = "na=" & na_Saratov_obl
-	viborka_202_Saratov_obl = "(na="& na_Saratov_obl &") & (uhom < 160)"
-	
-    '###########################################
-	' 209 => Нижегородская область (АИП => 209)
-	na_Nijegorodsray_obl = na_of_the_area_by_name("Нижегородская область")
-	viborka_209_Nijegorodsray_obl_full = "na=" & na_Nijegorodsray_obl
-	viborka_202_Nijegorodsray_obl = "(na="& na_Nijegorodsray_obl &") & (uhom < 160)"
-	
-	'###########################################
-	' 301 => Ростовская область (АИП => 301)
-	na_Rostov_obl = na_of_the_area_by_name("Ростовская область")
-	viborka_301_Rostov_obl_full = "na=" & na_Rostov_obl
-	viborka_301_Rostov_obl = "(na="& na_Rostov_obl &") & (uhom < 160)"
-	
-	'###########################################
-	' 203 => Ульяновская область (АИП => 203)
-	na_Ulynov_obl = na_of_the_area_by_name("Ульяновская область")
-	viborka_203_Ulynov_obl_full = "na=" & na_Ulynov_obl
-	viborka_203_Ulynov_obl = "(na="& na_Ulynov_obl &") & (uhom < 160)"
-	'###########################################
-	' 204 => Пензенская область (АИП => 204)
-	na_Penzin_obl = na_of_the_area_by_name("Пензенская область")
-	viborka_204_Penzin_obl_full = "na=" & na_Penzin_obl
-	viborka_204_Penzin_obl = "(na="& na_Penzin_obl &") & (uhom < 160)"
-    
-	'###########################################
-	' 401 => Мурманская область (АИП => 401)
-	na_Murmansk_obl = na_of_the_area_by_name("Мурманская область")
-	viborka_401_Murmansk_obl_full = "na=" & na_Murmansk_obl
-	viborka_401_Murmansk_obl = "(na="& na_Murmansk_obl &") & (uhom < 160)"
-	
-	'###########################################
-	' 402 => Республика Карелия (АИП => 402)
-	na_Kareliy = na_of_the_area_by_name("Республика Карелия")
-	viborka_402_Kareliy_full = "na=" & na_Kareliy
-	viborka_402_Kareliy = "(na="& na_Kareliy &") & (uhom < 160)"
-	
-	'###########################################
-	' 405 => Псковская область (АИП => 405)
-	na_Pskovskay_obl = na_of_the_area_by_name("Псковская область")
-	viborka_405_Pskovskay_obl_full = "na=" & na_Pskovskay_obl
-	viborka_405_Pskovskay_obl = "(na="& na_Pskovskay_obl &") & (uhom < 160)"
-	
-	'###########################################
-	' 407 => Калининградская область (АИП => 407)
-	na_Kaliningrad_obl = na_of_the_area_by_name("Калининградская область")
-	viborka_407_Kaliningrad_obl_full = "na=" & na_Kaliningrad_obl
-	viborka_407_Kaliningrad_obl = "(na="& na_Kaliningrad_obl &") & (uhom < 160)"
-	
-	'###########################################
-	' 805 => Эстонская Республика (АИП => 805)
-	na_Estony = na_of_the_area_by_name("Эстонская Республика")
-	viborka_805_Estony_full = "na=" & na_Estony
-	viborka_805_Estony = "(na="& na_Estony &") & (uhom < 160)"
-	
-	'###########################################
-	' 806 => Латвийская Республика (АИП => 806)
-	na_Latviy = na_of_the_area_by_name("Латвийская Республика")
-	viborka_806_Latviy_full = "na=" & na_Latviy
-	viborka_806_Latviy = "(na="& na_Latviy &") & (uhom < 160)"
-	
-	'###########################################
-	' 807 => Литовская Республика (АИП => 807)
-	na_Litva = na_of_the_area_by_name("Литовская Республика")
-	viborka_807_Litva_full = "na=" & na_Litva
-	viborka_807_Litva = "(na="& na_Litva &") & (uhom < 160)"
-	
-	'###########################################
-	' 801 => Финляндская Республика (АИП => 801)
-	na_Finskay = na_of_the_area_by_name("Финляндская Республика")
-	viborka_801_Finskay_full = "na=" & na_Finskay
-	viborka_801_Finskay = "(na="& na_Finskay &") & (uhom < 160)"
-	
-	'###########################################
-	' 823 => Донбасский регион (АИП => 823)
-	na_Donbas = na_of_the_area_by_name("Донбасский регион")
-	viborka_823_Donbas_full = "na=" & na_Donbas
-	viborka_823_Donbas = "(na="& na_Donbas &") & (uhom < 160)"
-	 
-	'###########################################
-	' 825 => Оренбургская область (АИП => 825 (зима_max - 831))
-	na_Orenburg_obl = na_of_the_area_by_name("Оренбургская область")
-	viborka_825_Orenburg_obl_full = "na=" & na_Orenburg_obl
-	viborka_825_Orenburg_obl = "(na="& na_Orenburg_obl &") & (uhom < 160)"
-    
-	'###########################################
-	' 207 => Республика Мордовия (АИП => 207 (зима_max - ))
-	na_Resp_Mordoviy = na_of_the_area_by_name("Республика Мордовия")
-	viborka_207_Resp_Mordoviy_full = "na=" & na_Resp_Mordoviy
-	viborka_207_Resp_Mordoviy = "(na="& na_Resp_Mordoviy &") & (uhom < 160)"
-	
-    '###########################################
-	' 404 => Новгородская область (АИП => 404 (зима_max - ))
-	na_Novgorod_obl = na_of_the_area_by_name("Новгородская область")
-	viborka_404_Novgorod_obl_full = "na=" & na_Novgorod_obl
-	viborka_404_Novgorod_obl = "(na="& na_Novgorod_obl &") & (uhom < 160)"
-    
-    '###########################################
-	' 408 => Архангельская область (АИП => 408 (зима_max - ))
-	na_Astrahan_obl = na_of_the_area_by_name("Архангельская область")
-	viborka_408_Astrahan_obl_full = "na=" & na_Astrahan_obl
-	viborka_408_Astrahan_obl = "(na="& na_Astrahan_obl &") & (uhom < 160)"
-        
-    '###########################################
-	' 311 => Волгоградская область (АИП => 311 (зима_max - ))
-	na_Volgogradskay_obl = na_of_the_area_by_name("Волгоградская область")
-	viborka_311_Volgogradskay_obl_full = "na=" & na_Volgogradskay_obl
-	viborka_311_Volgogradskay_obl = "(na="& na_Volgogradskay_obl &") & (uhom < 160)"
+	'area_array = Array(201,202,203,204,205,206,207,208,209,301,302,303,309,311,312,401,402,403,404,405,407,408,409,801,805,806,807,813,819,820) ' лето мин
+	'area_array = Array(203,2020,205,206,208,2070,8072,301,4011,402,405,407,8067,801,803,805,8060,807,813,819) ' лето макс
+	'area_array = Array(301,302,303,311,312)
+    'area_array = Array(801,802,805,806,807,819)
+    'area_array = Array(407)
+    area_array = Array(201)
     
     
-	'###########################################
 	Call control_rgm()
 	Call equivalent_settings()
 	Call zeroing()
-	Call off_the_line_from_two_side()
+	'Call off_the_line_from_two_side()
 	Call control_rgm()
-	Call off_the_generator_if_the_node_off()
-	Call control_rgm()
+	'Call off_the_generator_if_the_node_off()
+	'Call control_rgm()
 	Call zeroing()
+	flag = 1
+    fkag_ural = 0
     kod = t.rgm("p")
 	if kod<>(-1) then
-		Call deleting_switches_by_selection(viborka_ot_100_do_200_full)
 		'Call deleting_generator_switches()
-		Call zeroing()
-		Call equalization_of_the_Urals_energy_system(viborka_ot_100_do_200)
-		Call rastr_ekv()
-		Call control_rgm()
-		'###################################################
-		Call zeroing()
-		Call deleting_switches_by_selection(viborka_201_Samarskay_obl_full)
-		Call zeroing()
-		Call equivalent_to_generator_nodes(viborka_201_Samarskay_obl)
-		Call rastr_ekv()
-		Call control_rgm()
-		'###################################################
-		Call zeroing()
-		Call deleting_switches_by_selection(viborka_205_Tatrskay_full)
-		Call zeroing()
-		Call equivalent_to_generator_nodes(viborka_205_Tatrskay)
-		Call rastr_ekv()
-		Call control_rgm()
-		'###################################################
-		Call zeroing()
-		Call deleting_switches_by_selection(viborka_206_Chuvashy_full)
-		Call zeroing()
-		Call equivalent_to_generator_nodes(viborka_206_Chuvashy)
-		Call rastr_ekv()
-		Call control_rgm()
-		'###################################################
-		Call zeroing()
-		Call deleting_switches_by_selection(viborka_208_MariEl_full)
-		Call zeroing()
-		Call equivalent_to_generator_nodes(viborka_208_MariEl)
-		Call rastr_ekv()
-		Call control_rgm()
-		'###################################################
-		Call zeroing()
-		Call deleting_switches_by_selection(viborka_202_Saratov_obl_full)
-		Call zeroing()
-		Call equivalent_to_generator_nodes(viborka_202_Saratov_obl)
-		Call rastr_ekv()
-		Call control_rgm()
-		'###################################################
-		Call zeroing()
-		Call deleting_switches_by_selection(viborka_301_Rostov_obl_full)
-		Call zeroing()
-		Call equivalent_to_generator_nodes(viborka_301_Rostov_obl)
-		Call rastr_ekv()
-		Call control_rgm()
-		'###################################################
-		Call zeroing()
-		Call deleting_switches_by_selection(viborka_203_Ulynov_obl_full)
-		Call zeroing()
-		Call equivalent_to_generator_nodes(viborka_203_Ulynov_obl)
-		Call rastr_ekv()
-		Call control_rgm()
-		'###################################################
-		Call zeroing()
-		Call deleting_switches_by_selection(viborka_401_Murmansk_obl_full)
-		Call zeroing()
-		Call equivalent_to_generator_nodes(viborka_401_Murmansk_obl)
-		Call rastr_ekv()
-		Call control_rgm()
-		'###################################################
-		Call zeroing()
-		Call deleting_switches_by_selection(viborka_402_Kareliy_full)
-		Call zeroing()
-		Call equivalent_to_generator_nodes(viborka_402_Kareliy)
-		Call rastr_ekv()
-		Call control_rgm()
-		'###################################################
-		Call zeroing()
-		Call deleting_switches_by_selection(viborka_405_Pskovskay_obl_full)
-		Call zeroing()
-		Call equivalent_to_generator_nodes(viborka_405_Pskovskay_obl)
-		Call rastr_ekv()
-		Call control_rgm()
-		'###################################################
-		Call zeroing()
-		Call deleting_switches_by_selection(viborka_407_Kaliningrad_obl_full)
-		Call zeroing()
-		Call equivalent_to_generator_nodes(viborka_407_Kaliningrad_obl)
-		Call rastr_ekv()
-		Call control_rgm()	
-		'###################################################
-		Call zeroing()
-		Call deleting_switches_by_selection(viborka_805_Estony_full)
-		Call zeroing()
-		Call equivalent_to_generator_nodes(viborka_805_Estony)
-		Call rastr_ekv()
-		Call control_rgm()	
-		'###################################################
-		Call zeroing()
-		Call deleting_switches_by_selection(viborka_806_Latviy_full)
-		Call zeroing()
-		Call equivalent_to_generator_nodes(viborka_806_Latviy)
-		Call rastr_ekv()
-		Call control_rgm()	
-		'###################################################
-		Call zeroing()
-		Call deleting_switches_by_selection(viborka_807_Litva_full)
-		Call zeroing()
-		Call equivalent_to_generator_nodes(viborka_807_Litva)
-		Call rastr_ekv()
-		Call control_rgm()	
-		'###################################################
-		Call zeroing()
-		Call deleting_switches_by_selection(viborka_801_Finskay_full)
-		Call zeroing()
-		Call equivalent_to_generator_nodes(viborka_801_Finskay)
-		Call rastr_ekv()
-		Call control_rgm()	
-		'###################################################	
-		Call zeroing()
-		Call deleting_switches_by_selection(viborka_823_Donbas_full)
-		Call zeroing()
-		Call equivalent_to_generator_nodes(viborka_823_Donbas)
-		Call rastr_ekv()
-		Call control_rgm()
-		'###################################################	
-		Call zeroing()
-		Call deleting_switches_by_selection(viborka_825_Orenburg_obl_full)
-		Call zeroing()
-		Call control_rgm()
-		Call equivalent_to_generator_nodes(viborka_825_Orenburg_obl)
-		Call rastr_ekv()
-		Call control_rgm()
-        '###################################################	
-		Call zeroing()
-		Call deleting_switches_by_selection(viborka_204_Penzin_obl_full)
-		Call zeroing()
-		Call control_rgm()
-		Call equivalent_to_generator_nodes(viborka_204_Penzin_obl)
-		Call rastr_ekv()
-		Call control_rgm()
-        '###################################################	
-		Call zeroing()
-		Call deleting_switches_by_selection(viborka_207_Resp_Mordoviy_full)
-		Call zeroing()
-		Call control_rgm()
-		Call equivalent_to_generator_nodes(viborka_207_Resp_Mordoviy)
-		Call rastr_ekv()
-		Call control_rgm()
-        '###################################################	
-		Call zeroing()
-		Call deleting_switches_by_selection(viborka_209_Nijegorodsray_obl_full)
-		Call zeroing()
-		Call control_rgm()
-		Call equivalent_to_generator_nodes(viborka_209_Nijegorodsray_obl)
-		Call rastr_ekv()
-		Call control_rgm()
-        
-        '###################################################	
-		Call zeroing()
-		Call deleting_switches_by_selection(viborka_404_Novgorod_obl_full)
-		Call zeroing()
-		Call control_rgm()
-		Call equivalent_to_generator_nodes(viborka_404_Novgorod_obl)
-		Call rastr_ekv()
-		Call control_rgm()
-                
-        '###################################################	
-		Call zeroing()
-		Call deleting_switches_by_selection(viborka_408_Astrahan_obl_full)
-		Call zeroing()
-		Call control_rgm()
-		Call equivalent_to_generator_nodes(viborka_408_Astrahan_obl)
-		Call rastr_ekv()
-		Call control_rgm()
-        
-        '###################################################	
-		Call zeroing()
-		Call deleting_switches_by_selection(viborka_311_Volgogradskay_obl_full)
-		Call zeroing()
-		Call control_rgm()
-		Call equivalent_to_generator_nodes(viborka_311_Volgogradskay_obl)
-		Call rastr_ekv()
-		Call control_rgm()
-        
-        '###################################################
-        Call zeroing()
-        Call control_rgm()
-		Call removing_nodes_without_branches()
-		Call control_rgm()
-		Call Delete_Generator_without_nodes()
-		Call control_rgm()
-		Call reactors_change()
-		Call control_rgm()
-	else
+           for j=1 to 1 ' 2-а круга
+                print("$$$$$$$$$$$$ Круг: " & j)
+                ' Урал
+               if fkag_ural = 1 then
+                    viborka_ot_100_do_200_full = "(na>100 & na<200)" ' для выключателей без учета ограничений по напряжению
+                    viborka_ot_100_do_200 = "(na>100 & na<200) & (uhom<230)"  ' для эквивалентирования с учетом огран. по напряжению
+                    Call deleting_switches_by_selection(viborka_ot_100_do_200_full)
+                    Call zeroing()
+                    Call equalization_of_the_Urals_energy_system(viborka_ot_100_do_200)
+                    Call rastr_ekv()
+                end if
+                Call control_rgm()
+                Call zeroing()
+                if flag = 1 then
+                    for i=0 to UBound(area_array)
+                        print((i+1) & ".Район номер: na = " & area_array(i))
+                        viborka_full = "na=" & area_array(i)
+                        viborka_ = "(na=" & area_array(i) & ")&(uhom < 160)"
+                        Call deleting_switches_by_selection(viborka_full)
+                        Call zeroing()
+                        Call equalization_of_the_Urals_energy_system(viborka_)
+                        Call rastr_ekv()
+                        Call control_rgm()
+                        Call zeroing()
+                    next
+                end if
+            next
+        'Call removing_nodes_without_branches()
+        'Call Delete_Generator_without_nodes
+        'Call reactors_change()
+    else
 		print("--- Ошибка: Режим расходится! ---")
 		print("--- Работа макроса завершена АВАРИЙНО! ---")
 	end if
@@ -494,7 +204,7 @@ Sub deleting_switches_by_selection(viborka_ray_vikl)
 	
 	node.SetSel(viborka_ray_vikl) ' выборка узлов всех районов кроме 500 (Центра)
     node.Cols("sel").calc(1) ' выделение выбраных узлов
-    vetv.SetSel("iq.sel=1 & ip.sel=0 &!sta") ' выборка ветвей iq.sel = 1 ...
+    vetv.SetSel("iq.sel=1&ip.sel=0 &!sta") ' выборка ветвей iq.sel = 1 ...
     k = vetv.FindNextSel(-1)
 	While k<>(-1) ' убирает sel-узла если на ВЛ с одной стороны выделен узел 
 		iq1 = vetv.Cols("iq").Z(k)

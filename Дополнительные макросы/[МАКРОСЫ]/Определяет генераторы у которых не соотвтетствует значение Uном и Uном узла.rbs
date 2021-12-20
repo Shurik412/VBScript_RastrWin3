@@ -1,0 +1,33 @@
+Set t= Rastr 
+
+Set spGen = t.Tables("Generator")
+Set spNode = t.Tables("node")
+
+CountGen = spGen.Count-1
+t.Printp("Количество генераторов в таблице Генераторы ИД: " & CountGen)
+t.Printp("===========================================================================")
+t.Printp("Номер Узла" & " ||| " & "Название узла" & " ||| " & "Номер генератора" & " ||| " & "Название генератора  |||")
+
+schet = 0
+for i=0 to CountGen
+    GenUnom = spGen.Cols("Ugnom").Z(i)
+    NodeGen = spGen.Cols("Node").Z(i)
+    spNode.SetSel("ny=" & NodeGen)
+    j = spNode.FindNextSel(-1)
+    NodeUnom = spNode.Cols("uhom").Z(j)
+    
+    if GenUnom > NodeUnom and GenUnom > NodeUnom + 2 Then
+       schet = schet + 1
+       nyNode = spNode.Cols("ny").Z(j)
+       nameNode = spNode.Cols("name").Z(j)
+       NumGen = spGen.Cols("Num").Z(i)
+       NameGen = spGen.Cols("Name").Z(i)
+       t.Printp(nyNode & " ||| " & nameNode & " ||| " & NumGen & " ||| " & NameGen & " |||  U ген.ном. = " & GenUnom & " => U узла.ном. = " & NodeUnom)
+    End if
+next
+t.Printp("***************************************************************************")
+t.Printp("Исследование завершено")
+if schet = 0 Then
+    t.Printp("***************************************************************************")
+    t.Printp("Узлы с Uном.узла > Uном.ген. или Uном.узла < Uном.ген. - не найдены!")
+end if

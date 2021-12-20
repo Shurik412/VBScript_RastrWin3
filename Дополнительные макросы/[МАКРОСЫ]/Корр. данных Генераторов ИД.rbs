@@ -1,0 +1,42 @@
+Set t = Rastr
+
+Set gen = t.Tables("Generator")
+
+Set mj = gen.Cols("Mj")
+Set p_gen = gen.Cols("P")
+Set q_gen = gen.Cols("Q")
+Set p_nom = gen.Cols("Pnom")
+Set xd1 = gen.Cols("xd1")
+Set ModelType = gen.Cols("ModelType") ' 3 -ÓðÄâèæ, 7 -3Ïàðê
+Set p_max = gen.Cols("Pmax")
+Set p_min = gen.Cols("Pmin")
+Set q_max = gen.Cols("Qmax")
+Set q_min = gen.Cols("Qmin")
+Set cosfi = gen.Cols("cosFi")
+Set name_gen = gen.Cols("Name")
+Set num_gen = gen.Cols("Num")
+Set node_gen = gen.Cols("Node")
+Set unom = gen.Cols("Ugnom")
+Set sta_gen = gen.Cols("sta")
+
+MaxRowGen = gen.Count
+
+for i=0 to MaxRowGen-1
+    if ModelType.Z(i) = 3 then
+        if (ABS(p_gen.Z(i)) > p_nom.Z(i)) then
+            p_nom.Z(i) = ABS(p_gen.Z(i))
+        end if
+        if (ABS(q_gen.Z(i)) > p_nom.Z(i)) then
+            p_nom.Z(i) = ABS(q_gen.Z(i))
+        end if
+        if (ABS(p_max.Z(i)) > p_nom.Z(i)) then
+            p_nom.Z(i) = ABS(p_max.Z(i))
+        end if
+        
+        mj.Z(i) = 5 * ABS(p_nom.Z(i))/cosfi.Z(i)
+        xd1.Z(i)= 0.3 * unom.Z(i) * unom.Z(i) * cosfi.Z(i)/ABS(p_nom.Z(i))
+        if (p_gen.Z(i)=0 and q_gen.Z(i)=0) then
+            sta_gen.Z(i) = 1
+        end if
+    end if
+next

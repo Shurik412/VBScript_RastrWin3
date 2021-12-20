@@ -1,0 +1,20 @@
+Set t =Rastr
+Set spGen = t.Tables("Generator")
+Set spNode = t.Tables("node")
+
+
+spGenMax = spGen.Count-1
+t.printp(spGenMax)
+
+for i=0 to spGenMax
+    
+    P = spGen.Cols("P").Z(i)
+    Pnom = spGen.Cols("Pnom").Z(i)
+    
+    if P = 0 then
+    elseif P > Pnom then
+        spGen.Cols("P").Z(i) = spGen.Cols("Pnom").Z(i)
+    end if
+next
+
+t.Printp("Исследование завершено")

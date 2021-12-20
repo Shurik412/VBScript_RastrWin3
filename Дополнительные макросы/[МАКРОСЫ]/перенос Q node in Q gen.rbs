@@ -1,0 +1,28 @@
+Set t =Rastr
+
+Set gen = t.Tables("Generator")
+Set node = t.Tables("node")
+
+MaxRowGen = gen.Count-1
+MaxRowNode = node.Count-1
+
+for y = 0 to MaxRowNode
+   QmaxNode = node.Cols("qmax").Z(y)
+   QminNode = node.Cols("qmin").Z(y)
+   ny_node = node.Cols("ny").Z(y)
+   
+   gen.SetSel("Node=" & ny_node)
+   s = gen.FindNextSel(-1)
+   if s <> (-1) then 
+       QmaxGen = gen.Cols("Qmax").Z(s) 
+       QminGen = gen.Cols("Qmin").Z(s) 
+   
+       if QmaxGen < QmaxNode then 
+           gen.Cols("Qmax").Z(s) = QmaxNode
+       End if 
+       
+       if QminGen > QminNode then
+           gen.Cols("Qmin").Z(s) = QminNode
+       End if
+    end if 
+next

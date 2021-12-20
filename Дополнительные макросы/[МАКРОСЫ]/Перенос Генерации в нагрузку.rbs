@@ -1,0 +1,46 @@
+Set t = Rastr
+Set gen = t.Tables("Generator")
+Set node = t.Tables("node")
+
+MaxRowGen = gen.Count-1
+
+gen.SetSel("")
+i = gen.FindNextSel(-1)
+While i<>-1
+    type_model_gen = gen.Cols("ModelType").Z(i)
+    
+    If type_model_gen = 0 Then 
+        node_gen = gen.Cols("Node").Z(i)
+        p_gen = gen.Cols("P").Z(i)
+        q_gen = gen.Cols("Q").Z(i)
+        
+        node.SetSel("ny=" & node_gen)
+        j = node.FindNextSel(-1)
+        if j<>-1 then
+            node.Cols("pn_max").Z(j) = 0
+            node.Cols("pn_min").Z(j) = 0
+            node.Cols("qn_max").Z(j) = 0
+            node.Cols("qn_min").Z(j) = 0
+            
+            p_n_node = node.Cols("pn").Z(j)
+            q_n_node = node.Cols("qn").Z(j)
+            
+            gen.DelRow(i)
+            node.Cols("pn").Z(j) = p_n_node + (p_gen * (-1))
+            node.Cols("qn").Z(j) = q_n_node + (q_gen * (-1))
+            
+            node.Cols("pg").Z(j) = 0
+            node.Cols("qg").Z(j) = 0
+            node.Cols("pg_max").Z(j) = 0
+            node.Cols("pg_min").Z(j) = 0
+            node.Cols("pg_nom").Z(j) = 0
+            
+            node.Cols("qmax").Z(j) = 0
+            node.Cols("qmin").Z(j) = 0
+            node.Cols("vzd").Z(j) = 0
+        end if 
+    end if   
+    i = gen.FindNextSel(i)
+wend
+
+t.Printp("—–¿¡Œ“¿À")

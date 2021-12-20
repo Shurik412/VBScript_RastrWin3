@@ -1,0 +1,97 @@
+r=setlocale("en-us")
+rrr=1
+Dim ArreyGenSetSel(100,100)
+Set t = Rastr
+Set spGen = t.Tables("Generator")
+Set spNode = t.Tables("node")
+
+GenRowMax = spGen.Count-1
+NodeRowMax = spNode.Count-1
+t.printp("GenRowMax = " & GenRowMax)
+t.printp("NodeRowMax = " & NodeRowMax)
+
+for ind_main = 0 to NodeRowMax
+    sta_node = spNode.Cols("sta").Z(ind_main)
+    ny_node = spNode.Cols("ny").Z(ind_main)
+    uhom_node = spNode.Cols("uhom").Z(ind_main)
+    pg_node = spNode.Cols("pg").Z(ind_main)
+    pg_nom_node = spNode.Cols("pg_nom").Z(ind_main)
+    pg_max_node = spNode.Cols("pg_max").Z(ind_main)
+    pg_min_node = spNode.Cols("pg_min").Z(ind_main)
+    qg_node = spNode.Cols("qg").Z(ind_main)
+    qmax_node = spNode.Cols("qmax").Z(ind_main)
+    qmin_node = spNode.Cols("qmin").Z(ind_main)
+    
+    spGen.SetSel("Node=" & ny_node)
+    row_gen_main = spGen.FindNextSel(-1)
+    
+    if row_gen_main<>(-1) Then
+        k = 0
+        MaxRowGenSetSel = spGen.Count-1
+        if MaxRowGenSetSel > 0 then
+            While row_gen_main<>(-1)
+                ArreyGenSetSel(k,0) = spGen.Cols("sta").Z(row_gen_main)
+                ArreyGenSetSel(k,1) = spGen.Cols("Num").Z(row_gen_main)
+                ArreyGenSetSel(k,2) = spGen.Cols("Name").Z(row_gen_main)
+                ArreyGenSetSel(k,3) = spGen.Cols("Node").Z(row_gen_main)
+                ArreyGenSetSel(k,4) = spGen.Cols("P").Z(row_gen_main)
+                ArreyGenSetSel(k,5) = spGen.Cols("Pnom").Z(row_gen_main)
+                ArreyGenSetSel(k,6) = spGen.Cols("Pmax").Z(row_gen_main)
+                ArreyGenSetSel(k,7) = spGen.Cols("Pmin").Z(row_gen_main)
+                ArreyGenSetSel(k,8) = spGen.Cols("Q").Z(row_gen_main)
+                ArreyGenSetSel(k,9) = spGen.Cols("Qmax").Z(row_gen_main)
+                ArreyGenSetSel(k,10) = spGen.Cols("Qmin").Z(row_gen_main)
+                
+                row_gen_main = spGen.FindNextSel(row_gen_main)
+                k = k + 1
+            wend
+
+            for g = 0 to k-1
+                StaGenArr  = ArreyGenSetSel(g,0)
+                NumGenArr  = ArreyGenSetSel(g,1)
+                NameGenArr = ArreyGenSetSel(g,2)
+                NodeGenArr = ArreyGenSetSel(g,3)
+                PgenGenArr = ArreyGenSetSel(g,4)
+                PnomGenArr = ArreyGenSetSel(g,5)
+                PmaxGenArr = ArreyGenSetSel(g,6)
+                PminGenArr = ArreyGenSetSel(g,7)
+                QgenGenArr = ArreyGenSetSel(g,8)
+                QmaxGenArr = ArreyGenSetSel(g,9)
+                QminGenArr = ArreyGenSetSel(g,10)
+                
+                spGen.SetSel("Num=" & NumGenArr)
+                rowGen = spGen.FindNextSel(-1)
+                if rowGen<>(-1) then
+                    if QmaxGenArr = 0 or QmaxGenArr < qmax_node then
+                        spGen.Cols("Qmax").Z(rowGen) = qmax_node
+                    end if
+                    if QminGenArr = 0 or QminGenArr > qmin_node then 
+                        spGen.Cols("Qmin").Z(rowGen) = qmin_node
+                    end if
+                    
+                    if pg_node = PgenGenArr Then
+                    end if 
+                    
+                    if pg_node < PgenGenArr then
+                        spGen.SetSel("Num=" & NumGenArr)
+                        j_gen = spGen.FindNextSel(-1)
+                        if j_gen<>(-1) then
+                            
+                        end if 
+                    end if 
+                    
+                    if pg_node > PgenGenArr then
+                        spGen.SetSel("Num=" & NumGenArr)
+                        jj_gen = spGen.FindNextSel(-1)
+                        if jj_gen<>(-1) then
+                            spGen.Cols("P").Z(jj_gen) = pg_node / k
+                        end if 
+                    end if 
+                    
+                end if 
+            next
+        End if
+        Erase ArreyGenSetSel
+    End if
+next
+t.Printp("Исследование завершено")

@@ -1,0 +1,20 @@
+Set t = Rastr
+r=setlocale("en-us")
+Set spGen = t.Tables("Generator")
+Set spNode = t.Tables("node")
+
+spGenMax = spGen.Count-1
+t.printp(spGenMax)
+for i = 0 to spGenMax
+    NodeGen = spGen.Cols("Node").Z(i)
+    StaGen = spGen.Cols("sta").Z(i)
+    
+    spNode.SetSel("ny=" & NodeGen)
+    j = spNode.FindNextSel(-1)
+    NodeSta = spNode.Cols("sta").Z(j)
+    ' t.Printp("NodeSta=" & NodeSta)
+    if NodeSta = "Истина" Then
+        spGen.Cols("sta").Z(i) = 1
+    end if
+next
+t.Printp("Исследование завершено")

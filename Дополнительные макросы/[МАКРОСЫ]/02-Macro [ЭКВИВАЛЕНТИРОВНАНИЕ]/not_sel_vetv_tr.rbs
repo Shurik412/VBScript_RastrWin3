@@ -1,0 +1,110 @@
+set t = Rastr
+set vetv = Rastr.Tables("vetv") 
+
+max_count = vetv.count-1
+
+
+Call If_Vetv_Tr_otkl(220)
+
+Sub If_Vetv_Tr_otkl_new(U_LIMIT)
+    Set vetv = t.Tables("vetv")
+    Set node = t.Tables("node")
+    Set gen = t.Tables("Generator")
+    
+    MaxRowVetv = vetv.Count
+    If U_LIMIT = 220 then
+        For i=0 to MaxRowVetv-1
+            type_vetv = vetv.Cols("tip").Z(i)
+            if type_vetv = 1 then
+                ny_ip = vetv.Cols("ip").Z(i) ' номер начала
+                ny_iq = vetv.Cols("iq").Z(i) ' номер конца
+                
+                node.SetSel("ny=" & ny_ip)
+                j_ny_ip = node.FindNextSel(-1)
+                uhom_ip = node.Cols("uhom").Z(j_ny_ip)
+                node.SetSel("")
+                
+                node.SetSel("ny=" & ny_iq)
+                j_ny_iq = node.FindNextSel(-1)
+                uhom_iq = node.Cols("uhom").Z(j_ny_iq)
+                node.SetSel("")
+                'v_ip = vetv.Cols("v_ip").Z(i) ' напряжение начала 
+                'v_iq = vetv.Cols("v_iq").Z(i) ' напряжение конца
+                v_ip = uhom_ip
+                v_iq = uhom_iq
+                
+                ' t.Printp("v_ip = " & v_ip & " - v_iq = " & v_iq)
+                
+                if (v_ip = 220) or (v_iq = 220) then 
+                    vetv.Cols("sel").Z(i) = 0
+
+                    node.SetSel("ny=" & ny_ip)
+                    j_ny_ip = node.FindNextSel(-1)
+                    node.Cols("sel").Z(j_ny_ip) = 0
+                    node.SetSel("")
+                    
+                    node.SetSel("ny=" & ny_iq)
+                    j_ny_iq = node.FindNextSel(-1)
+                    node.Cols("sel").Z(j_ny_iq) = 0
+                    node.SetSel("")
+                end if
+            end if 
+        next
+      end if
+      
+      If U_LIMIT = 110 then
+        For i=0 to MaxRowVetv-1
+            type_vetv = vetv.Cols("tip").Z(i)
+            if type_vetv = 1 then
+                ny_ip = vetv.Cols("ip").Z(i) ' номер начала
+                ny_iq = vetv.Cols("iq").Z(i) ' номер конца
+                
+                node.SetSel("ny=" & ny_ip)
+                j_ny_ip = node.FindNextSel(-1)
+                uhom_ip = node.Cols("uhom").Z(j_ny_ip)
+                node.SetSel("")
+                
+                node.SetSel("ny=" & ny_iq)
+                j_ny_iq = node.FindNextSel(-1)
+                uhom_iq = node.Cols("uhom").Z(j_ny_iq)
+                node.SetSel("")
+                'v_ip = vetv.Cols("v_ip").Z(i) ' напряжение начала 
+                'v_iq = vetv.Cols("v_iq").Z(i) ' напряжение конца
+                v_ip = uhom_ip
+                v_iq = uhom_iq
+                
+                ' t.Printp("v_ip = " & v_ip & " - v_iq = " & v_iq)
+                flag = 0
+                if flag = 1 then
+                    if (v_ip = 220) or (v_iq = 220) then 
+                        vetv.Cols("sel").Z(i) = 0
+
+                        node.SetSel("ny=" & ny_ip)
+                        j_ny_ip = node.FindNextSel(-1)
+                        node.Cols("sel").Z(j_ny_ip) = 0
+                        node.SetSel("")
+                        
+                        node.SetSel("ny=" & ny_iq)
+                        j_ny_iq = node.FindNextSel(-1)
+                        node.Cols("sel").Z(j_ny_iq) = 0
+                        node.SetSel("")
+                    end if
+                end if
+                
+                if (v_ip = 110) or (v_iq = 110) then 
+                    vetv.Cols("sel").Z(i) = 0
+
+                    node.SetSel("ny=" & ny_ip)
+                    j_ny_ip = node.FindNextSel(-1)
+                    node.Cols("sel").Z(j_ny_ip) = 0
+                    node.SetSel("")
+                    
+                    node.SetSel("ny=" & ny_iq)
+                    j_ny_iq = node.FindNextSel(-1)
+                    node.Cols("sel").Z(j_ny_iq) = 0
+                    node.SetSel("")
+                end if
+            end if 
+        next
+      end if
+End sub

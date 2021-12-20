@@ -1,0 +1,18 @@
+r=setlocale("en-us")
+rrr=1
+Set t = Rastr
+Set spGen = t.Tables("Generator")
+Set spNode = t.Tables("node")
+
+spGenMax = spGen.Count-1
+t.printp(spGenMax)
+
+for i = 0 to spGenMax
+    Pgen = spGen.Cols("P").Z(i)
+    Qgen = spGen.Cols("Q").Z(i)
+	If Pgen = 0 and Qgen = 0 or (1 > Pgen > 0) and Qgen = 0 Then
+		spGen.Cols("sta").Z(i) = 1
+	End if
+next
+
+t.Printp("Исследование завершено")

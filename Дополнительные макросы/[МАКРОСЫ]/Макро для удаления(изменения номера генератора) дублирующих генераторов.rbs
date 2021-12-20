@@ -1,0 +1,49 @@
+Set t=Rastr
+Set gen=t.Tables("Generator")
+
+Call DubleGen()
+
+Sub DubleGen()
+    spGenMax = gen.Count-1
+    t.Printp("Всего генераторов: " & spGenMax)
+    For i=0 to spGenMax
+        NumGen = gen.Cols("Num").Z(i)
+        gen.SetSel("Num =" & NumGen)
+        GenMaxFor = gen.Count
+        If GenMaxFor = 2 or GenMaxFor = 3 or GenMaxFor = 4 or GenMaxFor = 5 Then
+           for ig = 0 to 5
+               't.Printp("Генераторов выборки " & GenMaxFor & ": " & GenMaxFor)
+               gen.SetSel("Num = " & NumGen)
+               j = gen.FindNextSel(-1)
+               if j <> -1 Then
+                   NumGen2 = gen.Cols("Num").Z(j)
+                   ModelTypeGenViborki = 3'gen.Cols("ModelType").Z(j)
+                   NameGenTwo = gen.Cols("Name").Z(j)
+                   if ModelTypeGenViborki = 3 Then
+                      if GenMaxFor = 2 Then 
+                          gen.Cols("Num").Z(j) = NumGen & "0"
+                      End if      
+                      if GenMaxFor = 3 Then
+                             gen.Cols("Num").Z(j) = NumGen & (ig+1)
+                      end if
+                      if GenMaxFor = 4 Then
+                         gen.Cols("Num").Z(j) = NumGen & (ig+2) 
+                      end if
+                      if GenMaxFor = 5 Then
+                             gen.Cols("Num").Z(j) = NumGen & (ig+3) 
+                      End If
+                      
+                      t.Printp("Найден дублирующий генератор: " & NumGen2 & ", название: " & NameGenTwo)
+                      
+                      if GenMaxFor > 5 Then
+                             gen.Cols("sel").Z(j) = NumGen & (ig+3) 
+                      End If 
+                   End If
+                   if ModelTypeGenViborki <> 3 Then
+                      t.Printp("Необходимо скорректировать номер генератора вручную: " & NumGen2 & ", название: " & NameGenTwo)
+                   End if
+               End If
+           next
+          end if 
+       next
+End Sub

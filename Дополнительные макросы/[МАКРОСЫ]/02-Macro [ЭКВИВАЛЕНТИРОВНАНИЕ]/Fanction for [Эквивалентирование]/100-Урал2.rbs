@@ -1,0 +1,442 @@
+Set t = Rastr 
+
+
+Call Equivalence()
+
+
+Sub Equivalence()
+    Set node = t.Tables("node")
+    Set vetv = t.Tables("vetv")
+    Set gen = t.Tables("Generator")
+    
+    t.rgm("p")
+    
+    t.Printp(" Обнуление")
+    Call Obnulenie()  ' обнуление всех sel (выделенных галочкой) УЗЛОВ и ВЕТВЕЙ
+    Call Vikluchatel()
+
+    t.Printp(" Обнуление")
+    Call Obnulenie()  ' обнуление всех sel (выделенных галочкой) УЗЛОВ и ВЕТВЕЙ
+    Call Ukraine()
+    
+    t.Printp(" Обнуление")
+    Call Obnulenie()  ' обнуление всех sel (выделенных галочкой) УЗЛОВ и ВЕТВЕЙ
+    vyborka_rayon2 = "na=407"
+    Call Ekvivalent_siln(vyborka_rayon2)
+    
+    t.Printp(" Обнуление")
+    Call Obnulenie()  ' обнуление всех sel (выделенных галочкой) УЗЛОВ и ВЕТВЕЙ
+    vyborka_gen = "((na>100 & na<200 & na!=108)|(na>300 & na<400 & na!=311 & na!=403) | na=201 | na=203 | na=205 | na=208 | na=206 | na=805 | na=806 | na=807) & (uhom=110 | uhom=220) "
+    Call Ekv_gen(vyborka_gen)
+    
+    t.Printp(" Обнуление")
+    Call Obnulenie()  ' обнуление всех sel (выделенных галочкой) УЗЛОВ и ВЕТВЕЙ
+    vyborka_rayon = "((na>100 & na<200 & na!=108)|(na>300 & na<400 & na!=311 & na!=403) | na=201 | na=203 | na=205 | na=208 | na=206 | na=805 | na=806 | na=807) & (uhom=110 | uhom=220) "
+    Call Ekvivalent_smart(vyborka_rayon)
+    
+    t.printp("Завершение.")
+End Sub
+
+
+
+Sub Obnulenie()  ' обнуление всех sel (выделенных галочкой) УЗЛОВ и ВЕТВЕЙ
+    Set node = t.Tables("node")
+    Set vetv = t.Tables("vetv")
+    
+    vetv.SetSel("")
+	vetv.cols("sel").calc("0")
+	node.SetSel("")
+	node.cols("sel").calc("0")
+End Sub
+
+Sub Vikluchatel()
+    Set vet=t.tables("vetv")
+    Set uzl=t.tables("node")
+    Set gen=t.tables("Generator")
+    
+    Dim nodes(15000)
+	
+	uzl.SetSel("na<500 | na>600") ' выборка узлов всех районов кроме 500 (Центра)
+    uzl.cols("sel").calc(1) ' выделение выбраных узлов
+    vet.SetSel("iq.sel=1 & ip.sel=0 &!sta") ' выборка ветвей iq.sel = 1 ...
+    k = vet.FindNextSel(-1)
+	While k<>(-1) ' убирает sel-узла если на ВЛ с одной стороны выделен узел 
+		iq1 = vet.Cols("iq").z(k)
+		uzl.Setsel("ny=" & iq1)
+		k2 = uzl.FindNextSel(-1)
+		If k2<>(-1) Then
+			uzl.cols("sel").z(k2) = 0
+		End If
+		k = vet.FindNextSel(k)
+    Wend
+ t.Printp("1")
+    vet.SetSel("iq.sel=0 & ip.sel=1 & !sta")
+    k = vet.FindNextSel(-1)
+	
+    While k<>(-1) ' убирает sel-узла если на ВЛ с одной стороны выделен узел 
+		ip1 = vet.Cols("ip").z(k)
+		uzl.Setsel "ny=" & ip1
+		k2 = uzl.FindNextSel(-1)
+		If k2<>(-1) Then
+			uzl.cols("sel").z(k2) = 0
+		End If
+		k = vet.FindNextSel(k)
+	Wend
+ t.Printp("2")   
+	vet.SetSel("(iq.sel=1 & ip.sel=0)|(ip.sel=1 & iq.sel=0) & tip=2") ' tip=2 - выключатели (выборка всех выключателей если хотябы с одной стороны выделен узел sel)
+    k = vet.FindNextSel(-1)
+    While k<>(-1)
+		iq1 = vet.Cols("iq").z(k)
+		uzl.Setsel "ny=" & iq1
+		k2 = uzl.FindNextSel(-1)
+		If k2<>(-1) Then
+			uzl.cols("sel").z(k2) = 0
+		End If
+		ip1 = vet.Cols("ip").z(k)
+		uzl.Setsel "ny=" & ip1
+		k2 = uzl.FindNextSel(-1)
+		If k2<>(-1) Then
+			uzl.cols("sel").z(k2) = 0
+		End If
+		vet.SetSel("(iq.sel=1 &ip.sel=0) | (ip.sel=1 &iq.sel=0) & tip=2")
+		k = vet.FindNextSel(-1)
+    Wend
+ t.Printp("3")	    
+    vetvyklvybexc = "(iq.bsh>0 & ip.bsh=0) | (ip.bsh>0 & iq.bsh=0) | (iq.bshr>0 & ip.bshr=0) | (ip.bshr>0 & iq.bshr=0)| ip.sel=0 | iq.sel=0)"
+    flvykl = 0
+	vet.SetSel("1")
+	vet.cols("groupid").calc(0)
+	vet.SetSel(vetvyklvybexc)
+	vet.cols("groupid").calc(1)
+	nvet = 0
+	' удаление выключателей
+	for povet = 0 to 10000
+		vet.SetSel("x<0.01 & x>-0.01 & r<0.005 & r>=0 & (ktr=0 | ktr=1) & !sta & groupid!=1 & b<0.000005")  'Выборка ветвей, которые считаем выключателями
+		ivet = vet.FindNextSel(-1)
+		If ivet = -1 Then exit for
+            ip = vet.Cols("ip").z(ivet)
+            iq = vet.Cols("iq").z(ivet)
+            If ip > iq Then
+                ny = iq 
+                ndel = ip
+            else 
+                ny = ip
+                ndel = iq
+            End If
+            ndny = 0
+            ndndel = 0
+			'Проверка на наличие узла из списка неудаляемых
+            for inodee = 0 to nnod
+                If 	ndel = nodes(inodee) Then ndndel = 1
+                If 	ny = nodes(inodee) Then ndny = 1
+                If (ndndel = 1) and (ndny = 1) Then exit for
+            next
+			' Меняем местами, так как удаляемый нельзя удалять, а неудаляемый можно ))
+            If (ndndel = 0) and (ndny = 1) Then
+                buff = ny
+                ny = ndel
+                ndel = buff
+            End If
+			
+            If (ndndel = 0) or (ndny = 0) Then 'Если хотя бы один можно удалить
+                flvykl = flvykl + 1
+				uzl.SetSel("ny=" & ny)
+				iny = uzl.FindNextSel(-1)
+				uzl.SetSel("ny=" & ndel)
+				idel = uzl.FindNextSel(-1)
+				pgdel = uzl.cols("pg").z(idel)
+				qgdel = uzl.cols("qg").z(idel)
+				pndel = uzl.cols("pn").z(idel)
+				qndel = uzl.cols("qn").z(idel)
+				bshdel = uzl.cols("bsh").z(idel)
+				gshdel = uzl.cols("gsh").z(idel)
+				pgny = uzl.cols("pg").z(iny)
+				qgny = uzl.cols("qg").z(iny)
+				pnny = uzl.cols("pn").z(iny)
+				qnny = uzl.cols("qn").z(iny)
+				bshny = uzl.cols("bsh").z(iny)
+				gshny = uzl.cols("gsh").z(iny)
+                
+				uzl.cols("pg").z(iny) = pgdel + pgny
+				uzl.cols("qg").z(iny) = qgdel + qgny
+				uzl.cols("pn").z(iny) = pndel + pnny
+				uzl.cols("qn").z(iny) = qndel + qnny
+				uzl.cols("bsh").z(iny) = bshdel + bshny
+				uzl.cols("gsh").z(iny) = gshdel + gshny
+				v1 = uzl.cols("vzd").z(iny)
+				v2 = uzl.cols("vzd").z(idel)
+				qmax1 = uzl.cols("qmax").z(iny)
+				qmax2 = uzl.cols("qmax").z(idel)
+				                  
+				gen.Setsel("Node=" & ndel)
+				igen = gen.FindNextSel(-1) 'Меняем узлы подключения генераторов
+				
+				If igen<>(-1) Then
+					While igen<>(-1) 
+						gen.cols("Node").z(igen) = ny
+						igen = gen.FindNextSel(igen)
+					Wend
+				End If
+				
+				If (v1<>v2) and (v1>0.3) and (v2>0.3) and (qmax1 + qmax2)<>0 Then
+					uzl.cols("vzd").z(iny) = (v1*qmax1+v2*qmax2)/(qmax1+qmax2) 'Делаем средневзвешенное по qmax напряжение
+				End If
+				
+				If (v1=0) and (v2<>0) Then
+					uzl.cols("vzd").z(iny) = v2
+				End If
+				
+				If (v1<>0) and (v2<>0) Then
+					uzl.cols("qmin").z(iny) = (uzl.cols("qmin").z(iny)) + (uzl.cols("qmin").z(idel))
+					uzl.cols("qmax").z(iny) = qmax1 + qmax2
+				End If
+
+				If (v1=0) and (v2<>0) Then
+					uzl.cols("qmin").z(iny) = uzl.cols("qmin").z(idel)
+					uzl.cols("qmax").z(iny) = uzl.cols("qmax").z(idel)
+				End If
+				
+				vet.SetSel("(ip=" & ip & "& iq=" & iq & ")|(iq=" & ip & "& ip=" & iq & ")")
+				vet.delrows 'Удаляем ветвь	
+				vet.SetSel("iq=" & ndel) 'Меняем узлы ветвей с удаляемым узлом)))
+				vet.cols("iq").calc(ny)	
+				vet.SetSel("ip=" & ndel)
+				vet.cols("ip").calc(ny)	
+				uzl.delrows 		' Удаляем узел
+            Else 'Если ни одного нельзя удалить
+                vet.SetSel("(ip=" & ip & "& iq=" & iq & ")|(iq=" & ip & "& ip=" & iq & ")")
+                vet.cols("groupid").calc(1)
+            End If
+    next
+    t.Printp("4")
+    kod = t.rgm ("p")
+    If kod<>0 Then
+        msgbox "Regim do not exist"		
+    End If
+    If_Vetv_Tr_otkl()
+End Sub
+
+Sub Ukraine()
+	Set vet=t.tables("vetv")
+    Set uzl=t.tables("node")
+    
+    vet.SetSel("")
+    vet.cols("sel").calc("0")
+    uzl.SetSel("")
+    uzl.cols("sel").calc("0")
+    
+    t.Tables("com_ekviv").Cols("zmax").z(0)=1000
+    t.Tables("com_ekviv").Cols("ek_sh").z(0)=0
+    t.Tables("com_ekviv").Cols("otm_n").z(0)=0
+    t.Tables("com_ekviv").Cols("smart").z(0)=0
+    t.Tables("com_ekviv").Cols("tip_ekv").z(0)=0
+    t.Tables("com_ekviv").Cols("ekvgen").z(0)=0
+    t.Tables("com_ekviv").Cols("tip_gen").z(0)=1
+    
+    uzl.SetSel("")
+    uzl.cols("sel").calc(0)
+    
+    vet.SetSel("(iq.na=803 & (ip.na>300 | ip.na<400))")
+    k=vet.FindNextSel(-1)
+	While k<>(-1)
+		iq1=vet.Cols("iq").z(k)
+		uzl.Setsel "ny="&iq1
+		k2=uzl.FindNextSel(-1)
+		If k2<>-1 Then
+            uzl.cols("sel").z(k2)=1
+		End If
+		k=vet.FindNextSel(k)
+    Wend
+
+    vet.SetSel("(iq.na=803 & (ip.na>300 | ip.na<400))")
+    k=vet.FindNextSel(-1)
+    While k<>(-1)
+        ip1=vet.Cols("ip").z(k)
+        uzl.Setsel "ny="&ip1
+        k2=uzl.FindNextSel(-1)
+        If k2<>-1 Then
+            uzl.cols("sel").z(k2)=1
+        End If
+        k=vet.FindNextSel(k)
+    Wend
+
+    vet.SetSel("((iq.sel=1 & ip.sel=0)|(ip.sel=1 & iq.sel=0)) & ip.na=803 & iq.na=803 & !sta")
+    k=vet.FindNextSel(-1)
+    While k<>(-1)
+        iq1=vet.Cols("iq").z(k)
+        uzl.Setsel "ny="&iq1
+        k2=uzl.FindNextSel(-1)
+        If k2<>-1 Then
+            uzl.cols("sel").z(k2)=1
+        End If
+        ip1=vet.Cols("ip").z(k)
+        uzl.Setsel "ny="&ip1
+        k2=uzl.FindNextSel(-1)
+        If k2<>-1 Then
+            uzl.cols("sel").z(k2)=1
+        End If
+        vet.SetSel("((iq.sel=1 & ip.sel=0)|(ip.sel=1 & iq.sel=0)) & ip.na=803 & iq.na=803 & !sta")
+        k=vet.FindNextSel(-1)
+    Wend
+    
+    If_Vetv_Tr_otkl()
+    t.Ekv""
+End Sub
+
+Sub Ekvivalent_siln(vyborka_rayon2)
+    Set vet=t.tables("vetv")
+	Set uzl=t.tables("node")
+    
+	vet.SetSel("")
+    vet.cols("sel").calc("0")
+    uzl.SetSel("")
+    uzl.cols("sel").calc("0")
+	
+    t.Tables("com_ekviv").Cols("zmax").z(0) = 1000
+    t.Tables("com_ekviv").Cols("ek_sh").z(0) = 0
+    t.Tables("com_ekviv").Cols("otm_n").z(0) = 0
+    t.Tables("com_ekviv").Cols("smart").z(0) = 0
+    t.Tables("com_ekviv").Cols("tip_ekv").z(0) = 0
+    t.Tables("com_ekviv").Cols("ekvgen").z(0) = 0
+    t.Tables("com_ekviv").Cols("tip_gen").z(0) = 1
+	
+    uzl.Setsel(vyborka_rayon2)
+    uzl.cols("sel").calc("1")
+    
+    vet.SetSel("iq.sel=1 & ip.sel=0 & !sta")
+    k = vet.FindNextSel(-1)
+	While k<>(-1)
+		iq1 = vet.Cols("iq").z(k)
+		uzl.Setsel "ny=" & iq1
+		k2 = uzl.FindNextSel(-1)
+		If k2<>-1 Then
+			uzl.cols("sel").z(k2)=0
+		End If
+		k = vet.FindNextSel(k)
+    Wend
+ 
+	vet.SetSel("iq.sel=0 & ip.sel=1 & !sta")
+    k = vet.FindNextSel(-1)
+	While k<>(-1)
+		ip1 = vet.Cols("ip").z(k)
+		uzl.Setsel "ny=" & ip1
+		k2 = uzl.FindNextSel(-1)
+		If k2<>-1 Then
+			uzl.cols("sel").z(k2) = 0
+		End If
+		k = vet.FindNextSel(k)
+    Wend
+    
+    If_Vetv_Tr_otkl()
+    t.Ekv("")
+End Sub
+
+Sub Ekv_gen(vyborka_gen)
+    Set vet=t.tables("vetv")
+    Set uzl=t.tables("node")
+	uzl.Setsel(vyborka_gen)
+    k = uzl.FindNextSel(-1)
+    While k<>(-1)
+		ny1 = uzl.Cols("ny").z(k)
+		vet.SetSel("(ip.uhom<110 & iq=" & ny1 & ")|(iq.uhom<110 & ip=" & ny1 & ")") 
+		k2 = vet.FindNextSel(-1)
+		While k2<>(-1)
+			ip1 = vet.Cols("ip").z(k2)
+			iq1 = vet.Cols("iq").z(k2)
+			If ip1 = ny1 Then
+				ny2 = iq1
+			else
+				ny2 = ip1
+			End If
+			uzl.Setsel "ny=" & ny2
+			k3 = uzl.FindNextSel(-1)
+			If k3<>-1 Then
+				uzl.cols("sel").z(k3) = 1
+			End If
+			k2 = vet.FindNextSel(k2)
+		Wend
+		uzl.Setsel(vyborka_gen)
+		k = uzl.FindNextSel(k)
+    Wend
+    
+	t.Tables("com_ekviv").Cols("zmax").z(0) = 1000
+    t.Tables("com_ekviv").Cols("ek_sh").z(0) = 0
+    t.Tables("com_ekviv").Cols("otm_n").z(0) = 0
+    t.Tables("com_ekviv").Cols("smart").z(0) = 0
+    t.Tables("com_ekviv").Cols("tip_ekv").z(0) = 0
+    t.Tables("com_ekviv").Cols("ekvgen").z(0) = 0
+    t.Tables("com_ekviv").Cols("tip_gen").z(0) = 1
+	If_Vetv_Tr_otkl()
+    t.Ekv("")
+    uzl.Setsel "uhom>50"
+    uzl.cols("sel").calc("0")
+    If_Vetv_Tr_otkl()
+    t.Ekv("")
+    uzl.Setsel "uhom>50"
+    uzl.cols("sel").calc("0")
+    If_Vetv_Tr_otkl()
+    t.Ekv("")
+    uzl.Setsel "uhom>50"
+    uzl.cols("sel").calc("0")
+    If_Vetv_Tr_otkl()
+    t.Ekv("")
+    uzl.Setsel "uhom>50"
+    uzl.cols("sel").calc("0")
+    If_Vetv_Tr_otkl()
+    t.Ekv("")
+    uzl.Setsel "uhom>50"
+    uzl.cols("sel").calc("0")
+    If_Vetv_Tr_otkl()
+    t.Ekv("")
+    uzl.Setsel "uhom>50"
+    uzl.cols("sel").calc("0")
+    If_Vetv_Tr_otkl()
+    t.Ekv("")
+End Sub
+
+Sub Ekvivalent_smart(vyborka_rayon)
+    Set vet=t.tables("vetv")
+    Set uzl=t.tables("node")
+    
+	vet.SetSel("")
+    vet.cols("sel").calc("0")
+    uzl.SetSel("")
+    uzl.cols("sel").calc("0")
+	
+    t.Tables("com_ekviv").Cols("zmax").z(0) = 1000
+    t.Tables("com_ekviv").Cols("ek_sh").z(0) = 0
+    t.Tables("com_ekviv").Cols("otm_n").z(0) = 0
+    t.Tables("com_ekviv").Cols("smart").z(0) = 1
+    t.Tables("com_ekviv").Cols("tip_ekv").z(0) = 0
+    t.Tables("com_ekviv").Cols("ekvgen").z(0) = 0
+    t.Tables("com_ekviv").Cols("tip_gen").z(0) = 1
+	
+    uzl.Setsel(vyborka_rayon)
+    uzl.cols("sel").calc("1")
+    If_Vetv_Tr_otkl()
+    t.Ekv ""
+End Sub
+
+Sub If_Vetv_Tr_otkl()
+    Set vetv = t.Tables("vetv")
+    Set node = t.Tables("node")
+    MaxRowVetv = vetv.Count
+    For i=0 to MaxRowVetv-1
+        type_vetv = vetv.Cols("tip").Z(i)
+        if type_vetv = 1 then
+            ny_ip = vetv.Cols("ip").Z(i)
+            ny_iq = vetv.Cols("iq").Z(i)
+            vetv.Cols("sel").Z(i) = 0
+            node.SetSel("ny=" & ny_ip)
+            j_node_ip = node.FindNextSel(-1)
+            if j_node_ip <> (-1) then
+                node.Cols("sel").Z(j_node_ip) = 0
+            end if
+            node.SetSel("ny=" & ny_iq)
+            j_node_iq = node.FindNextSel(-1)
+            if j_node_iq <> (-1) then
+                node.Cols("sel").Z(j_node_iq) = 0
+            end if
+        end if
+    next
+End sub

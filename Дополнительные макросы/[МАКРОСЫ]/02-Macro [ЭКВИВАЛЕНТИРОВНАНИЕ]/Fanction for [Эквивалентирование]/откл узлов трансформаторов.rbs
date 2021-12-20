@@ -1,0 +1,31 @@
+Set t =Rastr
+
+
+Sub If_Vetv_Tr_otkl()
+    Set vetv = t.Tables("vetv")
+    Set node = t.Tables("node")
+    
+    MaxRowVetv = vetv.Count
+    
+    For i=0 to MaxRowVetv-1
+        type_vetv = vetv.Cols("tip").Z(i)
+       
+        if type_vetv = 1 then
+            ny_ip = vetv.Cols("ip").Z(i)
+            ny_iq = vetv.Cols("iq").Z(i)
+            vetv.Cols("sel").Z(i) = 0
+            node.SetSel("ny=" & ny_ip)
+            j_node_ip = node.FindNextSel(-1)
+            if j_node_ip <> (-1) then
+                node.Cols("sel").Z(j_node_ip) = 0
+            end if
+            node.SetSel("ny=" & ny_iq)
+            j_node_iq = node.FindNextSel(-1)
+            if j_node_iq <> (-1) then
+                node.Cols("sel").Z(j_node_iq) = 0
+            end if
+        end if
+    next
+End sub
+
+If_Vetv_Tr_otkl()

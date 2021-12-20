@@ -1,0 +1,45 @@
+Set t=Rastr
+Set gen=t.Tables("Generator")
+Set sel_gen = gen.Cols("sel")
+
+GenMaxRow_1 = gen.Count - 1
+gen.SetSel("sel=1")
+sel_gen.Calc("sel=0")
+
+for i1=0 to GenMaxRow_1
+    NumGen_1 = gen.Cols("Num").Z(i1)
+    NameGen_1 = gen.Cols("Name").Z(i1)
+    gen.SetSel("Num = " & NumGen_1)
+    j = gen.FindNextSel(-1)
+    GenMaxRow_2 = gen.Count-1
+    t.Printp(GenMaxRow_2)
+    if GenMaxRow_2 > 0 Then
+        NameGen_2 = gen.Cols("Name").Z(j)
+        t.Printp(NameGen_2)
+        for i2=1 to GenMaxRow_2
+           gen.SetSel("Num =" & NumGen_1)
+           j = gen.FindNextSel(-1)
+           t.Printp(j)
+           if j <> -1 then
+              NameGen_3 = gen.Cols("Name").Z(j+i2)
+              NumGen_2 = gen.Cols("Num").Z(j)
+              t.Printp(NameGen_2 & NameGen_3 & j&i2)
+              if NameGen_2 = NameGen_3 then
+                 gen.Cols("sel").Z(j+i2) = 1
+              End if
+              if NameGen_2 <> NameGen_3 then
+                  t.Printp("JR")
+                  t.Printp(gen.Cols("Num").Z(j+i2))
+                  t.Printp( NumGen_2)
+                  t.Printp( NumGen_2 & i2)
+                  t.Printp( i2)
+                  gen.Cols("Num").Z(j+i2) = NumGen_2 & i2
+                  t.Printp(gen.Cols("Num").Z(j+i2))
+              end if
+           end if
+        next
+    End if
+next
+
+gen.SetSel("sel=1")
+gen.DelRows

@@ -1,0 +1,26 @@
+
+r=setlocale("en-us")
+rrr=1
+
+
+set t=RASTR
+
+set vet=t.tables("vetv")
+set uzl=t.tables("node")
+set ray=t.tables("area")
+set gen=t.tables("Generator")
+set pqd=t.Tables("graphik2")
+set graphikIT=t.Tables("graphikIT")
+set area=t.Tables("area")
+set area2=t.Tables("area2")
+set darea=t.Tables("darea")
+set polin=t.Tables("polin")
+
+
+
+
+
+uzl.cols("na").calc("ny*0.00001")
+
+
+

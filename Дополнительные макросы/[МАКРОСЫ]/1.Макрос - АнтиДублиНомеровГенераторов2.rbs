@@ -1,0 +1,26 @@
+Set t=Rastr
+Set gen=t.Tables("Generator")
+Set regEx = New RegExp
+spGenMax = gen.Count-1
+
+for i=0 to spGenMax
+    NumGen = gen.Cols("Num").Z(i)
+    NameGen = gen.Cols("Name").Z(i)
+    gen.SetSel("Num =" & NumGen)
+    MaxGenDubl = gen.Count
+    j = gen.FindNextSel(-1)
+    if j<>-1 Then
+        if MaxGenDubl > 1 Then
+           Do While j<>-1
+                NumGenDubl = gen.Cols("Num").Z(j)
+                NumGenDublCorr = Replase("44488", "8", "9")
+                gen.Cols("Name").Z(j) = NumGenDublCorr
+                gen.SetSel("Num =" & NumGen)
+                MaxGenDubl = gen.Count
+                j = gen.FindNextSel(-1)
+                t.Printp(j)
+                if MaxGenDuble2 = 1 Then Exit Do
+            loop
+        End if
+    end if
+next

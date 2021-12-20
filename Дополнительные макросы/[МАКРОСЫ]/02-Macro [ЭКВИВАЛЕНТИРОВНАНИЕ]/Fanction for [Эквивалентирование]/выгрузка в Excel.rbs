@@ -1,0 +1,67 @@
+r=setlocale("ru-ru")
+Set t =Rastr
+t.Printp("Начало: " & date()& "_"& Hour(Now())&"h "&Minute(Now())&"m "&Second(Now())&"s")
+Set node = t.Tables("node")
+Set vetv = t.Tables("vetv")
+Set Excel = CreateObject("Excel.Application")
+
+settings = "L:\SecretDisk\SER\Динамическая модель\[МАКРОСЫ]\02-Macro [ЭКВИВАЛЕНТИРОВНАНИЕ]\Fanction for [Эквивалентирование]\ekviv.xlsx" ' Загрузка исходных данных из Settings файла Excel
+Excel.Workbooks.open settings
+
+Excel.EnableEvents = False
+Excel.ScreenUpdating = True
+Excel.DisplayAlerts = False
+Excel.Visible = True
+
+MaxRowNode = node.Count
+MaxRowVetv = vetv.Count
+
+for i=0 to MaxRowNode
+    Excel.Worksheets("node").Cells(i,1) = node.Cols("sel").Z(i)
+    Excel.Worksheets("node").Cells(i,2).value = node.Cols("sta").Z(i)
+    Excel.Worksheets("node").Cells(i,3).value = node.Cols("tip").Z(i)
+    Excel.Worksheets("node").Cells(i,4).value = node.Cols("ny").Z(i)
+    Excel.Worksheets("node").Cells(i,5).value = node.Cols("name").Z(i)
+    Excel.Worksheets("node").Cells(i,6).value = node.Cols("uhom").Z(i)
+    Excel.Worksheets("node").Cells(i,7).value = node.Cols("nsx").Z(i)
+    Excel.Worksheets("node").Cells(i,8).value = node.Cols("na").Z(i)
+    Excel.Worksheets("node").Cells(i,9).value = node.Cols("pn").Z(i)
+    Excel.Worksheets("node").Cells(i,10).value = node.Cols("qn").Z(i)
+    Excel.Worksheets("node").Cells(i,11).value = node.Cols("pg").Z(i)
+    Excel.Worksheets("node").Cells(i,12).value = node.Cols("qg").Z(i)
+    Excel.Worksheets("node").Cells(i,13).value = node.Cols("vzd").Z(i)
+    Excel.Worksheets("node").Cells(i,14).value = node.Cols("qmin").Z(i)
+    Excel.Worksheets("node").Cells(i,15).value = node.Cols("qmax").Z(i)
+    Excel.Worksheets("node").Cells(i,16).value = node.Cols("bsh").Z(i)
+    Excel.Worksheets("node").Cells(i,17).value = node.Cols("vras").Z(i)
+    Excel.Worksheets("node").Cells(i,18).value = node.Cols("delta").Z(i)
+    Excel.Worksheets("node").Cells(i,19).value = node.Cols("npa").Z(i)
+next
+
+for i=0 to MaxRowVetv
+    Excel.Worksheets("vetv").Cells(i,1).value = node.Cols("sel").Z(i)
+    Excel.Worksheets("vetv").Cells(i,2).value = node.Cols("sta").Z(i)
+    Excel.Worksheets("vetv").Cells(i,3).value = node.Cols("tip").Z(i)
+    Excel.Worksheets("vetv").Cells(i,4).value = node.Cols("ip").Z(i)
+    Excel.Worksheets("vetv").Cells(i,5).value = node.Cols("iq").Z(i)
+    Excel.Worksheets("vetv").Cells(i,6).value = node.Cols("np").Z(i)
+    Excel.Worksheets("vetv").Cells(i,7).value = node.Cols("groupid").Z(i)
+    Excel.Worksheets("vetv").Cells(i,8).value = node.Cols("name").Z(i)
+    Excel.Worksheets("vetv").Cells(i,9).value = node.Cols("r").Z(i)
+    Excel.Worksheets("vetv").Cells(i,10).value = node.Cols("x").Z(i)
+    Excel.Worksheets("vetv").Cells(i,11).value = node.Cols("b").Z(i)
+    Excel.Worksheets("vetv").Cells(i,12).value = node.Cols("ktr").Z(i)
+    Excel.Worksheets("vetv").Cells(i,13).value = node.Cols("n_anc").Z(i)
+    Excel.Worksheets("vetv").Cells(i,14).value = node.Cols("bd").Z(i)
+    Excel.Worksheets("vetv").Cells(i,15).value = node.Cols("pl_ip").Z(i)
+    Excel.Worksheets("vetv").Cells(i,16).value = node.Cols("ql_ip").Z(i)
+    Excel.Worksheets("vetv").Cells(i,17).value = node.Cols("na").Z(i)
+    Excel.Worksheets("vetv").Cells(i,18).value = node.Cols("i_max").Z(i)
+    Excel.Worksheets("vetv").Cells(i,19).value = node.Cols("i_zag").Z(i)
+next
+
+t.Printp("Конец после вывода в Excel: " & date()& "_"& Hour(Now())&"h "&Minute(Now())&"m "&Second(Now())&"s")
+
+Excel.Worksheets(1).SaveAs "L:\SecretDisk\SER\Динамическая модель\[МАКРОСЫ]\02-Macro [ЭКВИВАЛЕНТИРОВНАНИЕ]\Fanction for [Эквивалентирование]\ekviv_2.xlsx",51
+
+t.Printp("Конец после сохранения Excel: " & date()& "_"& Hour(Now())&"h "&Minute(Now())&"m "&Second(Now())&"s")

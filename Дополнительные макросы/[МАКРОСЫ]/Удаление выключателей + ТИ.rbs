@@ -1,0 +1,272 @@
+
+r=setlocale("en-us")
+rrr=1
+
+
+set t=RASTR
+
+set vet=t.tables("vetv")
+set uzl=t.tables("node")
+set ray=t.tables("area")
+set gen=t.tables("Generator")
+set pqd=t.Tables("graphik2")
+set graphikIT=t.Tables("graphikIT")
+set area=t.Tables("area")
+set area2=t.Tables("area2")
+set darea=t.Tables("darea")
+set polin=t.Tables("polin")
+set ti=t.Tables("ti")
+
+
+
+t.rgm "p"
+
+t.tables("node").Cols.Add "sel_new", PR_REAL
+t.tables("vetv").Cols.Add "sel_new2", PR_REAL
+t.tables("node").Cols.Add "vras_new", PR_REAL
+t.tables("node").Cols.Add "qmin_new", PR_REAL
+t.tables("node").Cols.Add "qmax_new", PR_REAL
+
+t.tables("area").Cols.Add "pop_new", PR_REAL
+t.tables("area").Cols.Add "poq_new", PR_REAL
+ray.cols("pop_new").calc("pop")
+ray.cols("poq_new").calc("poq")
+
+vet.SetSel("")
+vet.cols("sel_new2").calc("sel")
+
+vet.SetSel("")
+vet.cols("sel").calc("0")
+uzl.SetSel("")
+uzl.cols("sel").calc("0")
+
+uzl.SetSel("")
+uzl.cols("sel_new").calc(0)
+uzl.cols("sel_new").calc("sel")
+
+uzl.cols("vras_new").calc(0)
+uzl.cols("vras_new").calc("vras")
+
+
+
+
+'--------- удаление выключателей
+
+uzl.SetSel("na<500 | na>600")
+uzl.cols("sel").calc(1)
+uzl.cols("sel_new").calc("sel")
+
+
+vet.SetSel("iq.sel_new=1 &ip.sel_new=0 &!sta")
+k=vet.findnextsel(-1)
+while k<>(-1)
+iq1=vet.Cols("iq").z(k)
+uzl.setsel "ny="&iq1
+k2=uzl.findnextsel(-1)
+if k2<>-1 then
+uzl.cols("sel").z(k2)=0
+end if
+k=vet.findnextsel(k)
+wend
+
+vet.SetSel("iq.sel_new=0 &ip.sel_new=1 &!sta")
+
+k=vet.findnextsel(-1)
+while k<>(-1)
+ip1=vet.Cols("ip").z(k)
+uzl.setsel "ny="&ip1
+k2=uzl.findnextsel(-1)
+if k2<>-1 then
+uzl.cols("sel").z(k2)=0
+end if
+k=vet.findnextsel(k)
+wend
+
+
+vet.SetSel("(iq.sel=1 &ip.sel=0) | (ip.sel=1 &iq.sel=0) & tip=2")
+k=vet.findnextsel(-1)
+while k<>(-1)
+iq1=vet.Cols("iq").z(k)
+uzl.setsel "ny="&iq1
+k2=uzl.findnextsel(-1)
+if k2<>-1 then
+uzl.cols("sel").z(k2)=0
+end if
+ip1=vet.Cols("ip").z(k)
+uzl.setsel "ny="&ip1
+k2=uzl.findnextsel(-1)
+if k2<>-1 then
+uzl.cols("sel").z(k2)=0
+end if
+vet.SetSel("(iq.sel=1 &ip.sel=0) | (ip.sel=1 &iq.sel=0) & tip=2")
+k=vet.findnextsel(-1)
+wend
+
+Set cvzd=uzl.Cols("vzd")
+set csel=uzl.Cols("sel")
+set cip=vet.cols("ip") 
+set ciq=vet.cols("iq") 
+Dim nyplus(10000,8),vetmassiv(15000,3),nodes(15000)
+
+vetvyklvybexc = "(iq.bsh>0 & ip.bsh=0) | (ip.bsh>0 & iq.bsh=0) | ip.sel=0 | iq.sel=0)"
+vykldel
+
+Sub vykldel
+
+	flvykl=0
+
+	vet.SetSel "1"
+	vet.cols("groupid").calc(0)
+
+	'vet.SetSel "x=666"
+	'vet.cols("x").calc(665)
+
+	vet.SetSel vetvyklvybexc
+	vet.cols("groupid").calc(1)
+
+
+	nvet=0
+	for povet=0 to 10000
+		vet.SetSel("x<0.01 & x>-0.01 & r<0.005 & r>=0 & (ktr=0 | ktr=1) & !sta &groupid!=1 & b<0.000005")'Выборка ветвей, которые считаем выключателями
+		'vet.SetSel("tip=2 & x<0.01 & x>-0.01 & r<0.005 & r>=0 & (ktr=0 | ktr=1) & !sta &groupid!=1 & b<0.000005")
+		ivet=vet.FindNextSel(-1)
+
+		if ivet=-1 then exit for
+
+		ip=vet.Cols("ip").z(ivet)
+		iq=vet.Cols("iq").z(ivet)
+		if ip>iq then
+			ny=iq 
+			ndel=ip
+		else 
+			ny=ip
+			ndel=iq
+		end if
+
+		ndny=0
+		ndndel=0
+'Проверка на наличие узла из списка неудаляемых
+		for inodee=0 to nnod
+			if 	ndel=nodes(inodee) then ndndel=1
+			if 	ny=nodes(inodee) then ndny=1
+			if ndndel=1 and ndny=1 then exit for
+		next
+
+' Меняем местами, так как удаляемый нельзя удалять, а неудаляемый можно ))
+		if ndndel=0 and ndny=1 then
+			buff=ny
+			ny=ndel
+			ndel=buff
+		end if
+
+		if ndndel=0 or ndny=0 then 'Если хотя бы один можно удалить
+
+
+			flvykl=flvykl+1
+
+				uzl.SetSel("ny="&ny)
+				iny=uzl.findnextsel(-1)
+
+				uzl.SetSel("ny="&ndel)
+				idel=uzl.findnextsel(-1)
+
+				pgdel=uzl.cols("pg").z(idel)
+				qgdel=uzl.cols("qg").z(idel)
+				pndel=uzl.cols("pn").z(idel)
+				qndel=uzl.cols("qn").z(idel)
+				bshdel=uzl.cols("bsh").z(idel)
+				gshdel=uzl.cols("gsh").z(idel)
+
+				pgny=uzl.cols("pg").z(iny)
+				qgny=uzl.cols("qg").z(iny)
+				pnny=uzl.cols("pn").z(iny)
+				qnny=uzl.cols("qn").z(iny)
+				bshny=uzl.cols("bsh").z(iny)
+				gshny=uzl.cols("gsh").z(iny)
+
+				uzl.cols("pg").z(iny)=pgdel+pgny
+				uzl.cols("qg").z(iny)=qgdel+qgny
+				uzl.cols("pn").z(iny)=pndel+pnny
+				uzl.cols("qn").z(iny)=qndel+qnny
+				uzl.cols("bsh").z(iny)=bshdel+bshny
+				uzl.cols("gsh").z(iny)=gshdel+gshny
+
+
+				v1=uzl.cols("vzd").z(iny)
+				v2=uzl.cols("vzd").z(idel)
+				qmax1=uzl.cols("qmax").z(iny)
+				qmax2=uzl.cols("qmax").z(idel)
+
+
+
+				'writelog "Выключатели. #"& flvykl &". Оставляем узел ny= "&ny&". Удаляем узел ndel= "& ndel 
+				
+				gen.setsel("Node="&ndel)
+				igen=gen.findnextsel(-1) 'Меняем узлы подключения генераторов
+				if igen<>-1 then
+					while igen<>-1 
+						gen.cols("Node").z(igen)=ny
+						igen=gen.findnextsel(igen)
+					wend
+				end if
+
+				if v1<>v2 and v1>0.3 and v2>0.3 and (qmax1+qmax2)<>0 then
+					uzl.cols("vzd").z(iny)=(v1*qmax1+v2*qmax2)/(qmax1+qmax2) 'Делаем средневзвешенное по qmax напряжение
+				end if
+
+				if v1=0 and v2<>0 then
+					uzl.cols("vzd").z(iny)=v2
+				end if
+
+
+				if v1<>0 and v2<>0 then
+					uzl.cols("qmin").z(iny)=uzl.cols("qmin").z(iny)+uzl.cols("qmin").z(idel)
+					uzl.cols("qmax").z(iny)=qmax1+qmax2
+				end if
+
+				if v1=0 and v2<>0 then
+					uzl.cols("qmin").z(iny)=uzl.cols("qmin").z(idel)
+					uzl.cols("qmax").z(iny)=uzl.cols("qmax").z(idel)
+				end if
+
+
+				vet.SetSel("(ip="&ip &"& iq="&iq& ")|(iq="&ip &"& ip="&iq& ")")
+				vet.delrows 'Удаляем ветвь	
+
+
+				vet.SetSel("iq="&ndel) 'Меняем узлы ветвей с удаляемым узлом)))
+				vet.cols("iq").calc(ny)
+
+				ti.SetSel("prv_num<15 & id1="&ndel)
+				ti.cols("id1").calc(ny)	
+
+				vet.SetSel("ip="&ndel)
+				vet.cols("ip").calc(ny)	
+
+				ti.SetSel("prv_num<15 & id2="&ndel)
+				ti.cols("id2").calc(ny)	
+
+				uzl.delrows' Удаляем узел
+
+
+
+		else 'Если ни одного нельзя удалить
+			vet.SetSel("(ip="&ip &"& iq="&iq& ")|(iq="&ip &"& ip="&iq& ")")
+			vet.cols("groupid").calc(1)
+		end if
+
+
+	next
+
+	'writelog "Выключатели. Обработано "& flvykl &" штук."
+
+	kod = t.rgm ("p")
+	if kod<>0 then
+		msgbox "Regim do not exist"
+		'writelog "!!! After vykldel Regim do not exist!!!!!!"		
+	end if
+
+
+End Sub
+
+

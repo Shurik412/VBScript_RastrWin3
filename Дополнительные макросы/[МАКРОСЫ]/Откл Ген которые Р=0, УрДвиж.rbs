@@ -1,0 +1,17 @@
+Set t = Rastr
+
+Set gen = t.Tables("Generator")
+Set NameGen = gen.Cols("Name")
+Set Pgen = gen.Cols("P")
+Set ModelTypeGen = gen.Cols("ModelType")
+Set StaGen = gen.Cols("sta")
+Set NumGen = gen.Cols("Num")
+
+t.Printp(gen.Count)
+
+for i=0 to gen.Count-1
+    if (NameGen.Z(i) = "") and (Pgen.Z(i) < 0) or (Pgen.Z(i) = 0) and  ModelTypeGen.Z(i) = 3 Then
+        StaGen.Z(i) = 1
+        t.Printp("Номер генератора: " & NumGen.Z(i))
+    End If
+next

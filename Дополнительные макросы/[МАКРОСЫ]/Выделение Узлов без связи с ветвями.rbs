@@ -1,0 +1,37 @@
+Set t=Rastr
+Set vetv = t.Tables("vetv")
+Set node = t.Tables("node")
+
+NodeColMax = node.Count-1
+VetvColMax = vetv.Count-1
+t.printp("Количество узлов = " & NodeColMax)
+t.printp("Количество ветвей = " & VetvColMax)
+
+for i=0 to NodeColMax
+    Bsh = node.Cols("bsh").Z(i)
+    id_ny = node.Cols("ny").Z(i)
+    vetv.SetSel("ip.ny=" & id_ny & "| iq.ny=" & id_ny)
+    ColVetv = vetv.FindNextSel(-1)
+
+    
+    key = 1
+    
+    if key = 1 then
+        node.Cols("sel").Z(i) = 0
+        if ColVetv = -1 then 
+            node.Cols("sel").Z(i) = 1
+        end if
+    end if
+    
+    if key = 0 then
+        vetv.Cols("sel").Z(i) = 0
+        if ColVetv <> -1 then
+            TypeId = vetv.Cols("tip").Z(ColVetv)    
+            if TypeId = 2 then
+               if Bsh = 0 Then
+                    vetv.Cols("sel").Z(ColVetv) = 1
+               end if
+            end if
+         end if
+    end if
+next    

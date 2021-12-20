@@ -1,0 +1,50 @@
+Set t=Rastr
+For y = 1 to 2
+    Call CorrGenBuble()
+    t.Printp(y) 
+next
+
+Sub CorrGenBuble()
+    Set gen=t.Tables("Generator")
+    spGenMax = gen.Count-1
+    for i=0 to spGenMax
+        NumGen = gen.Cols("Num").Z(i)
+        NameGen = gen.Cols("Name").Z(i)
+        gen.SetSel("Num =" & NumGen)
+        MaxGenDubl = gen.Count
+        j = gen.FindNextSel(-1)
+        if j<>-1 Then
+            if MaxGenDubl > 1 Then
+               Do While j<>-1
+                    NumGenDubl = gen.Cols("Num").Z(j)
+                    if NumGenDubl > 10200000 and NumGenDubl < 10300000 Then
+                        gen.Cols("Num").Z(j) = 10200000 + i + j
+                    ElseIf NumGenDubl > 10300000 and NumGenDubl < 10400000 Then 
+                        gen.Cols("Num").Z(j) = 10300000 + i + j
+                    ElseIf NumGenDubl > 10400000 and NumGenDubl < 10500000 Then 
+                        gen.Cols("Num").Z(j) = 10400000 + i + j     
+                    ElseIf NumGenDubl > 10600000 and NumGenDubl < 10800000 Then 
+                        gen.Cols("Num").Z(j) = 10600000 + i + j
+                    ElseIf NumGenDubl > 10800000 and NumGenDubl < 11000000 Then 
+                        gen.Cols("Num").Z(j) = 10800000 + i + j    
+                    ElseIf NumGenDubl > 11000000 and NumGenDubl < 20000000 Then 
+                        gen.Cols("Num").Z(j) = 11000000 + i + j    
+                    ElseIf NumGenDubl > 20000000 and NumGenDubl < 20100000 Then 
+                        gen.Cols("Num").Z(j) = 20000000 + i + j    
+                    ElseIf NumGenDubl > 20100000 and NumGenDubl < 20200000 Then 
+                        gen.Cols("Num").Z(j) = 20100000 + i + j 
+                    ElseIf NumGenDubl > 20200000 and NumGenDubl < 20300000 Then 
+                        gen.Cols("Num").Z(j) = 20100000 + i + j
+                    Else 
+                        gen.Cols("Num").Z(j) = 82500000 + i + j
+                    End If
+                    gen.SetSel("Num =" & NumGen)
+                    MaxGenDubl = gen.Count
+                    j = gen.FindNextSel(-1)
+                    't.Printp(j)
+                    if MaxGenDuble2 = 1 Then Exit Do
+                loop
+            End if
+        end if
+    next
+End Sub

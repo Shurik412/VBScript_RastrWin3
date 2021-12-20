@@ -1,0 +1,4 @@
+Set cls = Rastr.Tables("DFWIEEE421").Cols
+For i = 0 to cls.Count-1 
+    Rastr.printp("'" & cls(i).Name & "': '" & cls(i).Prop(FL_DESC) & "',") ' FL_DESC  FL_ZAG
+Next

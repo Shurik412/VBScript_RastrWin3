@@ -1,0 +1,60 @@
+Dim TextSS
+set TablArea = Rastr.Tables("sechen")
+Set ColArea = TablArea.Cols("ns")
+Set NameArea = TablArea.Cols("name")
+
+Sub KorSech(ns,newp,viborka)
+
+    eps=1
+	Set grline=Rastr.Tables("grline")
+	Set node=Rastr.Tables("node")
+	Set pg=node.Cols("pg")
+	Set pg_nom=node.Cols("pg_nom")
+	Set ip=grline.Cols("ip")
+	Set iq=grline.Cols("iq")
+	pg_nom.Calc("pg")
+	For inini=1 to 1000
+		ps=Rastr.Calc("sum","sechen","psech","ns="&ns)   
+		Rastr.printp " Мощность сечения = " & ps
+		if (  abs(ps-newp)  < eps )  then exit sub
+		Rastr.sensiv_start ""
+		grline.SetSel("ns="&ns)
+		k=grline.FindNextSel(-1)
+		While k <>-1
+			i=ip.Z(k)
+			j=iq.Z(k)
+			Rastr.sensiv_back 4,1.,i,j,0
+			k=grline.FindNextSel(k)
+		Wend 
+		Rastr.sensiv_write ""
+		Rastr.sensiv_end
+		Set dr_p=node.Cols("dr_p")
+		db=Rastr.Calc("sum","node","dr_p",viborka)
+		if ( abs(db) < 0.000001 ) then
+			Rastr.printp "Невозможно изменить мощность по сечению"
+			exit sub
+		end if
+		rd=(ps-newp)/db
+		node.SetSel(viborka)
+		pg.Calc("pg + dr_p*"&rd)
+		kod=Rastr.rgm("")
+		if(kod <> 0) then
+			Rastr.printp "---------Аварийное завершение расчета режима----------- "
+			exit sub
+		end if
+	next
+End Sub
+
+
+n = 1 ' номер сечения
+pop = -1500 ' желаемая мощность сечения
+InputViborka = "tip>1 &!sta & abs(dr_p) >0.01" ' выборка узлов
+viborka="tip>1 &!sta & abs(dr_p) >0.01"
+
+if (n <> "") and (pop <> "") then
+    KorSech n+0,pop+0,viborka 	
+end if	
+
+
+
+

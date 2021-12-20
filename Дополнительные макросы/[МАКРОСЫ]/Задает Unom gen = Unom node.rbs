@@ -1,0 +1,21 @@
+Set t=Rastr
+Set gen = t.Tables("Generator")
+Set node = t.Tables("node")
+
+Set node_gen = gen.Cols("Node")
+Set u_nom_node = node.Cols("uhom")
+Set u_nom_gen = gen.Cols("Ugnom")
+Set sel_gen = gen.Cols("sel")
+
+MaxRowGen = gen.Count
+
+for i=0 to MaxRowGen-1
+    Unom_gen = u_nom_gen.Z(i)
+    node_gen_ny = node_gen.Z(i)   
+    node.SetSel("ny=" & node_gen_ny)
+    j=node.FindNextSel(-1)
+    if j<>-1 Then
+        Unom_node = u_nom_node.Z(j)
+        u_nom_gen.Z(i) = Unom_node
+    End if 
+next

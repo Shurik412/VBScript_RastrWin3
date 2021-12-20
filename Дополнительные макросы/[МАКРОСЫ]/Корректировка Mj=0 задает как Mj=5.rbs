@@ -1,0 +1,33 @@
+Set t =Rastr
+
+Call Korr_Mj()
+
+
+Function Korr_Mj() ' - корректировка Mj 
+    Set gen = t.Tables("Generator")
+    Set nsta=gen.Cols("sta")
+    Set numg=gen.Cols("Num")
+    Set nameg=gen.Cols("Name")
+    Set gNumBrand=gen.Cols("NumBrand")
+    Set nodeg=gen.Cols("Node")
+    Set ExciterId=gen.Cols("ExciterId")
+    Set ARSId=gen.Cols("ARSId")
+    Set pgen=gen.Cols("P")
+    Set ModelType=gen.Cols("ModelType")
+    Set pnom=gen.Cols("Pnom")
+    Set unom=gen.Cols("Ugnom")
+    Set cosfi=gen.Cols("cosFi")
+    Set Demp=gen.Cols("Demp")
+    Set mj=gen.Cols("Mj")
+    Set xd1=gen.Cols("xd1")
+
+    MaxGenRow = gen.Count-1
+    For i=0 to MaxGenRow
+        MjGen = mj.Z(i)
+        ModelGen= ModelType.Z(i)
+        If MjGen=0 and ModelGen = 3 Then
+            mj.Z(i) = 50
+            t.Printp("mj.Z(i)="&mj.Z(i))
+        End If
+    next
+End Function

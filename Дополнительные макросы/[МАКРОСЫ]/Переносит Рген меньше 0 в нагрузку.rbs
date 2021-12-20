@@ -1,0 +1,62 @@
+Set t=Rastr
+
+Set gen = t.Tables("Generator")
+Set Pgen = gen.Cols("P")
+Set Qgen = gen.Cols("Q")
+Set NodeGen = gen.Cols("Node")
+Set NameGenI = gen.Cols("Name")
+Set TypeModel = gen.Cols("ModelType")
+Set NumGen = gen.Cols("Num")
+
+Set node = t.Tables("node")
+Set node_pn = node.Cols("pn")
+Set node_qn = node.Cols("qn")
+Set node_pg = node.Cols("pg")
+Set node_qg = node.Cols("qg")
+Set node_name = node.Cols("name")
+Dim ArrNum(10000)
+
+MaxGen = gen.Count-1
+flag2 = 1
+if flag2 = 1 then
+jj=0
+strVL = "ÂË"
+strPC = "ÏÑ"
+for i=0 to MaxGen
+    NameGen = NameGenI.Z(i)
+    TypeModelGen = TypeModel.Z(i)
+    DefNameGenVL = InStr(1,NameGen,strVL,0)
+    DefNameGenPC = InStr(1,NameGen,strPC,0)
+    Pnom = gen.Cols("Pnom").Z(i)
+    Pgen = gen.Cols("P").Z(i)
+    Qgen = gen.Cols("Q").Z(i)
+    Xd1 = gen.Cols("xd1").Z(i)
+    Mj = gen.Cols("Mj").Z(i)
+    If TypeModelGen = 3 then
+        if (DefNameGenVL > 0 or DefNameGenPC > 0 or NameGen = "") then 
+            'if (0.1 > Pgen < 0) Then 
+                node.SetSel("ny=" & NodeGen.Z(i))
+                j = node.FindNextSel(-1)
+                node_pg.Z(j) = Pgen
+                node_qg.Z(j) = Qgen
+                t.Printp("NodeGen=" & gen.Cols("Node").Z(i) & " => " & node_name.Z(j) & " => " &NameGenI.Z(i)& " => " & NumGen.Z(i))
+                ArrNum(jj) = NumGen.Z(i)
+                t.Printp(jj & " ArrNum(jj)=" & ArrNum(jj))
+                jj = jj + 1 
+             'end if
+         end if    
+    end if
+next
+ArrCol = UBound(ArrNum,1)
+
+for x=0 to ArrCol
+    if ArrNum(x) <> 0 then
+        gen.SetSel("Num=" & ArrNum(x))
+        f = gen.FindNextSel(-1)
+        if f <> (-1) then 
+            gen.DelRow(f)
+        end if
+    end if
+next
+
+end if 

@@ -1,0 +1,25 @@
+r=setlocale("en-us")
+rrr=1
+
+Set t = Rastr
+Set spGen = t.Tables("Generator")
+Set spNode = t.Tables("node")
+
+spGenMax = spGen.Count-1
+spNodeMax = spNode.Count-1
+
+t.Printp(spNodeMax)
+t.Printp(spGenMax)
+
+for i = 0 to spNodeMax
+    Pgen_node = spNode.Cols("pg").Z(i)
+    Qgen_node = spNode.Cols("qg").Z(i)
+    
+    Pgen_node = Pgen_node + Pgen_node
+    Qgen_node = Qgen_node + Qgen_node
+next
+
+t.Printp("Pgen_node = " & Pgen_node)
+t.Printp("Qgen_node = " & Qgen_node)
+
+t.Printp("Исследование завершено")

@@ -1,0 +1,39 @@
+' Функция изменяет пути к пользовательским моделям
+' на путь в папку DLL в документах RastrWin3
+' Упрощает перенос моделей с компа на комп
+Sub TargetCustomModelsToDocuments
+    Set spCustomModelMap = Rastr.Tables("CustomDeviceMap")
+    Set spModule = spCustomModelMap.Cols("Module")
+    for i = 0 To spCustomModelMap.Size - 1
+        module = split(spModule.ZS(i),"\")
+        spModule.ZS(i) = "<DOCUMENTS>\CustomModels\DLL\" & module(Ubound(module))
+    next
+End Sub
+
+'TargetCustomModelsToDocuments
+
+
+' Корректировка моделей возбудителей IEEE c поколения "B" на поколение "C"
+
+Set spIEEEExciters = Rastr.Tables("DFWIEEE421")
+Set spType = spIEEEExciters.Cols("ModelType")
+function ModelIndexByType(strType)
+    ModelIndexByType = 0
+    for each enumType in split(spType.Prop(FL_NAMEREF),"|")
+        if enumType = strType Then Exit For
+        ModelIndexByType = ModelIndexByType + 1
+    next
+end function
+
+' AC8C
+spIEEEExciters.setSel "ModelType=" & ModelIndexByType("AC8C")
+spIEEEExciters.Cols("Kp").Calc(1)
+spIEEEExciters.Cols("SW1").Calc(1)
+Rastr.PrintP "Обработано моделей " & spIEEEExciters.Count
+
+'ST6C
+spIEEEExciters.setSel "ModelType=" & ModelIndexByType("ST6C")
+spIEEEExciters.Cols("Kc1").Calc("1.05777")
+spIEEEExciters.Cols("Kp").Calc(1)
+spIEEEExciters.Cols("SW1").Calc(1)
+Rastr.PrintP "Обработано моделей " & spIEEEExciters.Count

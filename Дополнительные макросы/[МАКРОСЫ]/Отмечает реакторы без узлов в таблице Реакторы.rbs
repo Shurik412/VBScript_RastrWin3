@@ -1,0 +1,25 @@
+Set t = Rastr
+r=setlocale("en-us")
+Set spGen = t.Tables("Generator")
+Set spNode = t.Tables("node")
+Set spReact = t.Tables("Reactors")
+
+'spGenMax = spGen.Count-1
+'t.printp(spGenMax)
+
+CountReact = spReact.Count-1
+ii = 0
+for i = 0 to CountReact
+    spReact.Cols("sel").Z(i) = 0
+    ReactNode = spReact.Cols("Id1").Z(i)
+    spNode.SetSel("ny=" & ReactNode)
+    j = spNode.FindNextSel(-1)
+    if j = -1 Then
+       spReact.Cols("sel").Z(i) = 1 
+       ii=ii+1
+      ' t.Printp("Количество реакторов без узлов: " & ii)
+    
+    end if
+next
+t.Printp("Количество реакторов без узлов: " & ii)
+t.Printp("Исследование завершено")

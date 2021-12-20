@@ -1,0 +1,23 @@
+r=setlocale("en-us")
+rrr=1
+
+set t=RASTR
+
+set vet=t.tables("vetv")
+set uzl=t.tables("node")
+set ny=uzl.Cols("ny")
+set name=uzl.Cols("name")
+set pg=uzl.Cols("pg") 
+Set staVetv = vet.Cols("sta")
+
+ii = 0
+VetvMaxRow = vet.Count-1
+for i = 0 to VetvMaxRow
+    sta = staVetv.Z(i)
+    If sta = 2 or sta = 3 Then
+        staVetv.Z(i) = 1
+        ii = ii + 1
+    end if
+next
+
+t.Printp("Количество ЛЭП с односторонним вкл., переведенных с состояние полного откючения: " & ii)

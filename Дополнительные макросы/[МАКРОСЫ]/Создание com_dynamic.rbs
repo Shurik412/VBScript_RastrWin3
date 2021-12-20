@@ -1,0 +1,23 @@
+r=setlocale("en-us")
+rrr=1
+
+set t=RASTR
+
+t.tables("com_dynamics").Cols.Add "Tras", PR_REAL
+t.tables("com_dynamics").Cols.Add "Hint", PR_REAL
+t.tables("com_dynamics").Cols.Add "Hmin", PR_REAL
+t.tables("com_dynamics").Cols.Add "Mint", PR_REAL
+t.tables("com_dynamics").Cols.Add "SMint", PR_REAL
+t.tables("com_dynamics").Cols.Add "IntEpsilon", PR_REAL
+t.tables("com_dynamics").Cols.Add "Hmax", PR_REAL
+t.tables("com_dynamics").Cols.Add "Tf", PR_REAL
+t.tables("com_dynamics").Cols.Add "dEf", PR_REAL
+t.tables("com_dynamics").Cols.Add "Hout", PR_REAL
+t.tables("com_dynamics").Cols.Add "Npf", PR_REAL
+t.tables("com_dynamics").Cols.Add "frSXNtoY", PR_REAL
+t.tables("com_dynamics").Cols.Add "SXNTolerance", PR_REAL
+t.tables("com_dynamics").Cols.Add "MaxResultFiles", PR_REAL
+t.tables("com_dynamics").Cols.Add "SnapTemplate", PR_REAL
+t.tables("com_dynamics").Cols.Add "SnapAutoLoad", PR_REAL
+t.tables("com_dynamics").Cols.Add "SnapMaxCount", PR_REAL
+
